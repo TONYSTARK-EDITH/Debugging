@@ -1,0 +1,68 @@
+@import url(https://fonts.googleapis.com/css?family=Lato:100,300,400);
+*,
+*:before,
+*:after {
+  text-rendering: optimizeLegibility;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+body {
+  padding: 1.5em;
+  background: rgba(53, 137, 174, 1);
+}
+
+fieldset {
+  background: #f1f1f1;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  padding: 1.5em 1.5em 2em;
+  margin-bottom: -3px;
+}
+fieldset img {
+  width: 100px;
+  float: left;
+}
+#timer {
+  width: 100px;
+  float: right;
+  position: relative;
+}
+.left-wrapper {
+  position: relative;
+  min-width: 50%;
+  background-color: #fff;
+  float: left;
+  padding: 5px;
+  height: 500px;
+}
+
+.right-wrapper {
+  position: relative;
+  height: 500px;
+  min-width: 50%;
+  float: right;
+}
+
+#ace-editorid {
+  font-size: 0.9em;
+  font-family: "Courier New", Courier, "Lucida Sans Typewriter",
+    "Lucida Typewriter", monospace;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+}
+
+.question__header {
+  border-bottom: 2px;
+}
+
+#sign-out {
+  position: relative;
+  float: right;
+  width: 100px;
+}

@@ -1,0 +1,90 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Code Editor</title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="{% static 'css/codeEditor.css' %}" />
+</head>
+
+<body>
+    <fieldset>
+        <img src="https://raw.githubusercontent.com/ajaxorg/ace/master/api/resources/images/ace_logo.png" />
+        <div class="utils" style="display: flex; float: right;flex-direction: column;align-items: center;">
+            <div id="timer" style="width: 150px;float: right;position: relative;padding-top: 19px;font-size: 25px;font-style: italic;">
+                <span id="minutes"></span> : <span id="seconds"></span> :
+                <span id="milli-seconds"></span>
+            </div>
+            <div id="sign-out" style="width: 150px;float: right;position: relative;font-size: 25px;font-style: italic;">
+                <form method="post" id="logout" action="/logout">
+                    {% csrf_token %}
+                    <input type="submit" class="dropdown-item" onclick="logout();" value="Sign out" />
+                    <div id="decoder" style="display: none; width: 0px; height: 0px"></div>
+                </form>
+            </div>
+        </div>
+    </fieldset>
+    <div class="Editor">
+        <div class="left-wrapper">
+            <div class="question__header">
+                <h2>Question</h2>
+            </div>
+            <div class="question"></div>
+            <div class="question__test__case"></div>
+        </div>
+        <div class="right-wrapper">
+            <code id="ace-editorid"></code>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ace.js"></script>
+    <script type="text/javascript" src="{% static 'js/index.js' %}"></script>
+    <script type="text/javascript">
+        // $(window).blur(e => {
+        //     $("#logout").submit();
+        // })
+        var theme = "ace/theme/monokai";
+        let lang =
+            "{{ lang }}" == "1" ? "python" : "{{ lang }}" == "2" ? "java" : "c";
+        var mode = `ace/mode/${lang}`;
+        var editor = ace.edit("ace-editorid");
+        editor.setTheme(theme);
+        editor.getSession().setMode(mode);
+        $("#decoder").html(`{{ code }}`);
+        const code = $("#decoder").html();
+        editor.insert(code);
+
+        document.onreadystatechange = (e) => {
+            if (document.readyState === "complete") {
+                // Run code
+                var timer;
+                var compareDate = new Date();
+                compareDate.setDate(compareDate.getDate() + 7);
+
+                let timerInterval = setInterval(() => {
+                    const now = new Date().getTime();
+                    const difference = compareDate.getTime() - now;
+                    var minutes = Math.floor(
+                        (difference % (1000 * 60 * 60)) / (1000 * 60)
+                    );
+                    var seconds = Math.floor((difference % (1000 * 60)) / 1000);
+                    let ms = Math.floor(difference % 100);
+                    if (difference <= 0) {
+                        clearInterval(timerInterval);
+                    }
+                    $("#minutes").text(minutes);
+                    $("#seconds").text(seconds);
+                    $("#milli-seconds").text(ms);
+                }, 1);
+            }
+        };
+    </script>
+</body>
+
+</html>
