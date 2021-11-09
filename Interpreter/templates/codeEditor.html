@@ -1,90 +1,445 @@
 {% load static %}
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <title>Code Editor</title>
-    <meta name="description" content="" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="{% static 'css/codeEditor.css' %}" />
+    <meta name="description" content=""/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous"/>
+    <style>
+        @import url(https://fonts.googleapis.com/css?family=Lato:100,300,400);
+
+        *,
+        *:before,
+        *:after {
+            text-rendering: optimizeLegibility;
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-image: url("{% static 'img/Black.jpg' %}") !important;
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+        }
+
+        .bg-cus {
+            background: transparent;
+            background-size: cover;
+        }
+
+        fieldset {
+            padding: 1.5em 1.5em 2em;
+            margin-bottom: -3px;
+        }
+
+        fieldset img {
+            width: 100px;
+            float: left;
+        }
+
+        #timer {
+            width: 100px;
+            float: right;
+            position: relative;
+        }
+
+        .left-wrapper {
+            position: relative;
+            width: 46% !important;
+            float: left;
+            padding: 5px;
+            height: max-content;
+            box-shadow: rgba(168, 7, 123, 0.4) 0px 0px 0px 2px, rgba(44, 6, 33, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;
+        }
+
+        .right-wrapper {
+            position: relative;
+            width: 50% !important;
+            height: auto;
+            float: right;
+            box-shadow: rgba(168, 7, 123, 0.4) 0px 0px 0px 2px, rgba(44, 6, 33, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;
+        }
+
+        .ace {
+            font-size: 0.9em;
+            font-family: "Courier New", Courier, "Lucida Sans Typewriter",
+            "Lucida Typewriter", monospace;
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+        }
+
+        .question__header {
+            border-bottom: 2px;
+        }
+
+        #sign-out {
+            position: relative;
+            float: right;
+            width: 100px;
+        }
+
+        .ace_scrollbar::-webkit-scrollbar, .left-wrapper::-webkit-scrollbar {
+            width: 8px !important;
+            height: 8px !important;
+        }
+
+        .ace_scrollbar::-webkit-scrollbar-track, .left-wrapper::-webkit-scrollbar-track {
+            background-color: rgba(0, 0, 0, 0.4) !important;
+            border-radius: 10px !important;
+        }
+
+        .ace_scrollbar::-webkit-scrollbar-thumb, .left-wrapper::-webkit-scrollbar-thumb {
+            background-color: #dfdfdf !important;
+        }
+
+        body::-webkit-scrollbar, .right-wrapper::-webkit-scrollbar {
+            background: #ddd;
+            width: 0;
+        }
+
+        body::-webkit-scrollbar-track, .right-wrapper::-webkit-scrollbar-track {
+            box-shadow: inset 0 0 10px #00000070;
+            border-radius: 10px;
+        }
+
+        body::-webkit-scrollbar-thumb, .right-wrapper::-webkit-scrollbar-thumb {
+            background: linear-gradient(125deg, #143642, #0F8B8D);
+            border-radius: 10px;
+        }
+
+    </style>
 </head>
 
-<body>
-    <fieldset>
-        <img src="https://raw.githubusercontent.com/ajaxorg/ace/master/api/resources/images/ace_logo.png" />
-        <div class="utils" style="display: flex; float: right;flex-direction: column;align-items: center;">
-            <div id="timer" style="width: 150px;float: right;position: relative;padding-top: 19px;font-size: 25px;font-style: italic;">
-                <span id="minutes"></span> : <span id="seconds"></span> :
-                <span id="milli-seconds"></span>
-            </div>
-            <div id="sign-out" style="width: 150px;float: right;position: relative;font-size: 25px;font-style: italic;">
-                <form method="post" id="logout" action="/logout">
-                    {% csrf_token %}
-                    <input type="submit" class="dropdown-item" onclick="logout();" value="Sign out" />
-                    <div id="decoder" style="display: none; width: 0px; height: 0px"></div>
-                </form>
-            </div>
+<body class="bg-cus clearfix">
+<fieldset class="text-light clearfix">
+    <img src="https://raw.githubusercontent.com/ajaxorg/ace/master/api/resources/images/ace_logo.png" alt=""/>
+    <div style="font-size: 25px;text-align: center;">
+        Welcome, {{ name }}
+    </div>
+    <div class="utils d-flex align-items-center flex-column float-end position-relative" style="top: -28px;">
+        <div id="timer float-end position-relative fst-italic" style="width:150px;font-size: 25px;">
+            <span id="minutes"></span> : <span id="seconds"></span> :
+            <span id="milli-seconds"></span>
         </div>
-    </fieldset>
-    <div class="Editor">
-        <div class="left-wrapper">
-            <div class="question__header">
-                <h2>Question</h2>
-            </div>
-            <div class="question"></div>
-            <div class="question__test__case"></div>
-        </div>
-        <div class="right-wrapper">
-            <code id="ace-editorid"></code>
+        <div id="sign-out float-end position-relative fst-italic" style="font-size: 25px;">
+            <form method="post" id="logout" action="/logout">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-danger" onclick="logout();">Sign out</button>
+            </form>
         </div>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ace.js"></script>
-    <script type="text/javascript" src="{% static 'js/index.js' %}"></script>
-    <script type="text/javascript">
-        // $(window).blur(e => {
-        //     $("#logout").submit();
-        // })
-        var theme = "ace/theme/monokai";
-        let lang =
-            "{{ lang }}" == "1" ? "python" : "{{ lang }}" == "2" ? "java" : "c";
-        var mode = `ace/mode/${lang}`;
-        var editor = ace.edit("ace-editorid");
+</fieldset>
+<div class="Editor text-light clearfix">
+    <div class="d-flex align-items-start clearfix">
+        <div class="nav flex-column nav-pills me-1 clearfix" id="v-pills-tab" role="tablist"
+             aria-orientation="vertical">
+            {% for i in res %}
+                {% if forloop.counter == 1 %}
+                    <button class="nav-link active" id="v-pills-{{ forloop.counter }}" data-bs-toggle="pill"
+                            data-bs-target="#v-tab-{{ forloop.counter }}"
+                            type="button" role="tab" aria-selected="true">{{ forloop.counter }}
+                    </button>
+
+                {% else %}
+                    <button class="nav-link" id="v-pills-{{ forloop.counter }}" data-bs-toggle="pill"
+                            data-bs-target="#v-tab-{{ forloop.counter }}"
+                            type="button" role="tab" aria-selected="false">{{ forloop.counter }}
+                    </button>
+                {% endif %}
+                <div class="visually-hidden" id="decode-{{ forloop.counter }}" data-lang={{ i.1 }}>{{ i.0 }}</div>
+
+            {% endfor %}
+
+        </div>
+        <div class="tab-content w-100 clearfix" id="v-pills-tabContent">
+            {% for i in res %}
+                {% with counter=forloop.counter %}
+                    {% if forloop.counter == 1 %}
+                        <div class="tab-pane fade show active clearfix" id="v-tab-{{ forloop.counter }}" role="tabpanel"
+                             aria-labelledby="v-pills-{{ forloop.counter }}">
+                            <div class="left-wrapper ms-1 bg-cus user-select-none ps-3 pt-3 clearfix">
+                                <div class="question__header border-bottom border-light w-75 mb-3">
+                                    <h2>Question</h2>
+                                </div>
+                                <div class="question mb-3">
+                                    {{ i.2 }}
+                                </div>
+                                <div class="question__test__case clearfix">
+                                    <div class="question__header border-bottom border-light w-75 mb-3 clearfix">
+                                        <h2>Test Cases</h2>
+                                    </div>
+                                    {% for j in i.3 %}
+                                        <dl>
+                                            <dt>Testcase {{ forloop.counter }} </dt>
+                                            <dt>Input:</dt>
+                                            <dd>
+                                                <pre>{{ j.0 }}</pre>
+                                            </dd>
+                                            <dt>Output:</dt>
+                                            <dd>
+                                                <pre>{{ j.1 }}</pre>
+                                            </dd>
+                                        </dl>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="right-wrapper d-flex flex-column bg-cus me-3 clearfix">
+
+                                <div class="ace" id="ace-{{ forloop.counter }}"
+                                     style="height: 430px !important;"></div>
+                                <div class="button d-inline-flex flex-row position-relative clearfix"
+                                     style="top: 444px;">
+                                    <button class="btn btn-success p-2 m-2 ms-0 me-3 clearfix">
+                                        Save
+                                    </button>
+                                    <button class="btn btn-primary p-2 m-2 clearfix"
+                                            onclick="runCode('ace-{{ forloop.counter }}');">Run
+                                    </button>
+                                </div>
+                                <br>
+                                <div class="progress position-relative bg-cus visually-hidden clearfix progress-{{ counter }}"
+                                     style="top: 444px;">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                         role="progressbar"
+                                         style="width: 25%;"
+                                         aria-valuenow="25" aria-valuemin="0"
+                                         aria-valuemax="100">25% Compiling
+                                    </div>
+                                </div>
+                                <div class="position-absolute visually-hidden clearfix a-{{ counter }}"
+                                     style="width:100%!important;min-height: 120px;top: 520px;box-shadow: rgba(168, 7, 123, 0.4) 0px 0px 0px 2px, rgba(44, 6, 33, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;">
+                                    <div class="collapse" id="collapseExample-{{ counter }}">
+                                        <div class="card card-body bg-cus" id="output" style="width: 700px;">
+                                            <div class="card-title c-{{ forloop.counter }}">
+                                            </div>
+                                            <div class="card-text ct-{{ forloop.counter }}">
+                                                {% for j in i.3 %}
+                                                    <dl>
+                                                        <dt>Testcase {{ forloop.counter }} </dt>
+                                                        <dt>Input:</dt>
+                                                        <dd>
+                                                            <pre>{{ j.0 }}</pre>
+                                                        </dd>
+                                                        <dt>Actual Output:</dt>
+                                                        <dd>
+                                                            <pre>{{ j.1 }}</pre>
+                                                        </dd>
+                                                        <dt>Your output</dt>
+                                                        <dd id="o-{{ counter }}-{{ forloop.counter }}"></dd>
+                                                    </dl>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="tab-pane fade clearfix" id="v-tab-{{ forloop.counter }}" role="tabpanel"
+                             aria-labelledby="v-pills-{{ forloop.counter }}">
+                            <div class="left-wrapper clearfix  bg-cus user-select-none ps-3 pt-3">
+                                <div class="question__header clearfix border-bottom border-light w-75 mb-3">
+                                    <h2>Question</h2>
+                                </div>
+                                <div class="question mb-3">
+                                    {{ i.2 }}
+                                </div>
+                                <div class="question__test__case clearfix">
+                                    <div class="question__header clearfix border-bottom border-light w-75 mb-3">
+                                        <h2>Test Cases</h2>
+                                    </div>
+                                    {% for j in i.3 %}
+                                        <dl>
+                                            <dt>Testcase {{ forloop.counter }} </dt>
+                                            <dt>Input:</dt>
+                                            <dd>
+                                                <pre>{{ j.0 }}</pre>
+                                            </dd>
+                                            <dt>Output:</dt>
+                                            <dd>
+                                                <pre>{{ j.1 }}</pre>
+                                            </dd>
+                                        </dl>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="right-wrapper clearfix d-flex flex-column bg-cus me-3">
+                                <div class="ace clearfix" id="ace-{{ forloop.counter }}"
+                                     style="height: 430px !important;"></div>
+                                <br>
+                                <div class="button d-inline-flex clearfix flex-row position-relative"
+                                     style="top: 420px;">
+                                    <button class="btn clearfix btn-success p-2 ms-0 me-3">
+                                        Save
+                                    </button>
+                                    <button class="btn clearfix btn-primary p-2"
+                                            onclick="runCode('ace-{{ forloop.counter }}');">Run
+                                    </button>
+                                </div>
+                                <br>
+                                <div class="progress clearfix position-relative bg-cus visually-hidden progress-{{ counter }}"
+                                     id="p-{{ forloop.counter }}"
+                                     style="top: 430px;">
+                                    <div class="progress-bar clearfix progress-bar-striped progress-bar-animated"
+                                         role="progressbar"
+                                         style="width: 25%;"
+                                         aria-valuenow="25" aria-valuemin="0"
+                                         aria-valuemax="100">25% Compiling
+                                    </div>
+                                </div>
+                                <div class="position-absolute clearfix visually-hidden a-{{ counter }}"
+                                     style="width:100%!important;min-height: 120px;top: 520px;box-shadow: rgba(168, 7, 123, 0.4) 0px 0px 0px 2px, rgba(44, 6, 33, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;">
+                                    <div class="collapse" id="collapseExample-{{ counter }}">
+                                        <div class="card card-body bg-cus" id="output-{{ forloop.counter }}"
+                                             style="width: 700px;">
+                                            <div class="card-title c-{{ forloop.counter }}">
+
+                                            </div>
+                                            <div class="card-text ct-{{ forloop.counter }}">
+                                                {% for j in i.3 %}
+                                                    <dl>
+                                                        <dt>Testcase {{ forloop.counter }} </dt>
+                                                        <dt>Input:</dt>
+                                                        <dd>
+                                                            <pre>{{ j.0 }}</pre>
+                                                        </dd>
+                                                        <dt>Actual Output:</dt>
+                                                        <dd>
+                                                            <pre>{{ j.1 }}</pre>
+                                                        </dd>
+                                                        <dt>Your output</dt>
+                                                        <dd id="o-{{ counter }}-{{ forloop.counter }}"></dd>
+                                                    </dl>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endwith %}
+            {% endfor %}
+
+        </div>
+    </div>
+
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+        integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.13/ace.js"
+        integrity="sha512-OMjy8oWtPbx9rJmoprdaQdS2rRovgTetHjiBf7RL7LvRSouoMLks5aIcgqHb6vGEAduuPdBTDCoztxLR+nv45g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script type="text/javascript">
+    // $(window).blur(e => {
+    //     $("#logout").submit();
+    // })
+
+    const theme = "ace/theme/monokai";
+    const lang = l => l == "1" ? "python" : l == "2" ? "java" : "c_cpp";
+    for (let i = 1; i <= "{{ n }}"; ++i) {
+        const decoder = $(`#decode-${i}`);
+        const mode = `ace/mode/${lang(decoder.data("lang"))}`;
+        console.log(mode);
+        const editor = ace.edit(`ace-${i}`);
         editor.setTheme(theme);
-        editor.getSession().setMode(mode);
-        $("#decoder").html(`{{ code }}`);
-        const code = $("#decoder").html();
-        editor.insert(code);
+        const code = decoder.text() + "\n";
+        const session = ace.createEditSession(code, mode);
+        editor.setSession(session);
+    }
 
-        document.onreadystatechange = (e) => {
-            if (document.readyState === "complete") {
-                // Run code
-                var timer;
-                var compareDate = new Date();
-                compareDate.setDate(compareDate.getDate() + 7);
-
-                let timerInterval = setInterval(() => {
-                    const now = new Date().getTime();
-                    const difference = compareDate.getTime() - now;
-                    var minutes = Math.floor(
-                        (difference % (1000 * 60 * 60)) / (1000 * 60)
-                    );
-                    var seconds = Math.floor((difference % (1000 * 60)) / 1000);
-                    let ms = Math.floor(difference % 100);
-                    if (difference <= 0) {
-                        clearInterval(timerInterval);
+    document.onreadystatechange = () => {
+        if (document.readyState === "complete") {
+            const compareDate = new Date();
+            compareDate.setDate(compareDate.getDate() + 7);
+            let timerInterval = setInterval(() => {
+                const now = new Date().getTime();
+                const difference = compareDate.getTime() - now;
+                const minutes = Math.floor(
+                    (difference % (1000 * 60 * 60)) / (1000 * 60)
+                );
+                const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+                let ms = Math.floor(difference % 100);
+                if (difference <= 0) {
+                    clearInterval(timerInterval);
+                }
+                $("#minutes").text(minutes);
+                $("#seconds").text(seconds);
+                $("#milli-seconds").text(ms);
+            }, 1);
+        }
+    };
+    runCode = (id) => {
+        let num = parseInt(id.split("-")[1]);
+        $(`.progress-${num}`).removeClass("visually-hidden");
+        const editor = ace.edit(id);
+        const code = editor.getValue();
+        let l = lang($(`#decode-${num}`).data("lang"))
+        l = l === "c_cpp" ? "c" : (l === "python") ? "python3" : l;
+        let id_ = `#collapseExample-${num}`;
+        let data = {
+            "id": num,
+            "code": code,
+            "lang": l,
+            "csrfmiddlewaretoken": "{{ csrf_token }}",
+        }
+        $.ajax({
+            method: "post",
+            url: "\\run",
+            data: data,
+            dataType: "json",
+            success: res => {
+                $(`.progress-${num}`).addClass("visually-hidden");
+                $(`.a-${num}`).removeClass("visually-hidden");
+                const ele = $(`.c-${num}`);
+                if (res.success === 1) {
+                    ele.html(`<span class='text-success h1'>${res.res}<\span>`);
+                    let s = `<button type="button" class="btn-close mt-3 bg-light float-end position-relative" data-bs-toggle="collapse" data-bs-target=${id_} aria-label="Close"></button>`;
+                    let ht = ele.html();
+                    ele.html(ht + s);
+                    $(`.ct-${num}`).html("");
+                } else if (res.success === -1) {
+                    ele.html(`<span class='text-danger h1'>${res.res}<\span>`);
+                    let s = `<button type="button" class="btn-close mt-3 bg-light float-end position-relative" data-bs-toggle="collapse" data-bs-target=${id_} aria-label="Close"></button>`;
+                    let ht = ele.html();
+                    ele.html(ht + s);
+                    $(`.ct-${num}`).html("");
+                } else {
+                    ele.html(`<span class='text-danger h1'>${res.res}<\span>`);
+                    let s = `<button type="button" class="btn-close mt-3 bg-light float-end position-relative" data-bs-toggle="collapse" data-bs-target=${id_} aria-label="Close"></button>`;
+                    let ht = ele.html();
+                    ele.html(ht + s);
+                    for (let i = 0; i < 2; ++i) {
+                        $(`#o-${num}-${i + 1}`).html(`<pre>${res.base[i]}<\pre>`);
                     }
-                    $("#minutes").text(minutes);
-                    $("#seconds").text(seconds);
-                    $("#milli-seconds").text(ms);
-                }, 1);
+                }
+                const myCollapse = document.getElementById(`collapseExample-${num}`);
+                const bsCollapse = new bootstrap.Collapse(myCollapse, {
+                    show: true
+                });
             }
-        };
-    </script>
+        })
+    }
+
+</script>
 </body>
 
 </html>

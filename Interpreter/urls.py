@@ -10,4 +10,5 @@ urlpatterns = [
     path("logout", v.logout_user, name="Logout"),
     path("addUser", v.user_add, name="Adduser"),
     path("addQuestion", v.question_add, name="Questionadd"),
+    path("run", v.get_output, name="Run"),
 ]

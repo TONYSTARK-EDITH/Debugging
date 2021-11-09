@@ -1,13 +1,23 @@
-from django.db import models
+from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import User
-from django.db.models.deletion import CASCADE
+from django.db import models
+from django_sharding_library.models import ShardedByMixin
 
 
-class Players(models.Model):
+class AdminPriv(models.Model):
+    class QuestionType(models.IntegerChoices):
+        EAS = 1, "Easy"
+        MED = 2, "Medium"
+        HIG = 3, "High"
+
+    type = models.SmallIntegerField(choices=QuestionType.choices, default=QuestionType.EAS, )
+    started = models.BooleanField(default=False)
+
+
+class Players(AbstractUser, ShardedByMixin):
     class Meta:
         verbose_name_plural = "Players"
 
-    user = models.OneToOneField(User, related_name="players", on_delete=CASCADE)
     is_online = models.BooleanField(default=False)
 
 
@@ -42,7 +52,7 @@ class Questions(models.Model):
     )
     question_time = models.SmallIntegerField(
         choices=QuestionTime.choices,
-        default=QuestionType.EAS,
+        default=QuestionTime.EAS,
     )
     lang = models.SmallIntegerField(
         choices=QuestionLang.choices,
