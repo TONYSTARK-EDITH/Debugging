@@ -13,6 +13,7 @@
           integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous"/>
     <style>
         @import url(https://fonts.googleapis.com/css?family=Lato:100,300,400);
+        @import url(https://fonts.googleapis.com/css?family=Source+Code+Pro:400);
 
         *,
         *:before,
@@ -119,10 +120,157 @@
             border-radius: 10px;
         }
 
+        .modal-content {
+            font-size: 16px;
+            background: radial-gradient(#222922, #000500);
+            font-family: 'Source Code Pro', monospace;
+            font-weight: 400;
+            overflow: hidden;
+            padding: 30px 0 0 30px;
+            text-align: center;
+        }
+
+        .word {
+            bottom: 0;
+            color: #fff;
+            font-size: 2.5em;
+            height: 2.5em;
+            left: 0;
+            line-height: 2.5em;
+            margin: auto;
+            right: 0;
+            position: absolute;
+            text-shadow: 0 0 10px rgba(50, 255, 50, 0.5), 0 0 5px rgba(100, 255, 100, 0.5);
+            top: 0
+        }
+
+        .word span {
+            display: inline-block;
+            transform: translateX(100%) scale(0.9);
+            transition: transform 500ms;
+        }
+
+        .word .done {
+            color: #6f6;
+            transform: translateX(0) scale(1);
+        }
+
+        .overlay {
+            background-image: linear-gradient(transparent 0%, rgba(10, 16, 10, 0.5) 50%);
+            background-size: 1000px 2px;
+            bottom: 0;
+            content: '';
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
+
+        .bubbly-button {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            display: inline-block;
+            font-size: 1em;
+            padding: 1em 2em;
+            margin-top: 100px;
+            margin-bottom: 60px;
+            -webkit-appearance: none;
+            appearance: none;
+            background-color: #ff0081;
+            color: #fff;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            transition: transform ease-in 0.1s, box-shadow ease-in 0.25s;
+            box-shadow: 0 2px 25px rgba(255, 0, 130, 0.5);
+        }
+
+        .bubbly-button:focus {
+            outline: 0;
+        }
+
+        .bubbly-button:before, .bubbly-button:after {
+            position: absolute;
+            content: '';
+            display: block;
+            width: 140%;
+            height: 100%;
+            left: -20%;
+            z-index: -1000;
+            transition: all ease-in-out 0.5s;
+            background-repeat: no-repeat;
+        }
+
+        .bubbly-button:before {
+            display: none;
+            top: -75%;
+            background-image: radial-gradient(circle, #ff0081 20%, transparent 20%), radial-gradient(circle, transparent 20%, #ff0081 20%, transparent 30%), radial-gradient(circle, #ff0081 20%, transparent 20%), radial-gradient(circle, #ff0081 20%, transparent 20%), radial-gradient(circle, transparent 10%, #ff0081 15%, transparent 20%), radial-gradient(circle, #ff0081 20%, transparent 20%), radial-gradient(circle, #ff0081 20%, transparent 20%), radial-gradient(circle, #ff0081 20%, transparent 20%), radial-gradient(circle, #ff0081 20%, transparent 20%);
+            background-size: 10% 10%, 20% 20%, 15% 15%, 20% 20%, 18% 18%, 10% 10%, 15% 15%, 10% 10%, 18% 18%;
+        }
+
+        .bubbly-button:after {
+            display: none;
+            bottom: -75%;
+            background-image: radial-gradient(circle, #ff0081 20%, transparent 20%), radial-gradient(circle, #ff0081 20%, transparent 20%), radial-gradient(circle, transparent 10%, #ff0081 15%, transparent 20%), radial-gradient(circle, #ff0081 20%, transparent 20%), radial-gradient(circle, #ff0081 20%, transparent 20%), radial-gradient(circle, #ff0081 20%, transparent 20%), radial-gradient(circle, #ff0081 20%, transparent 20%);
+            background-size: 15% 15%, 20% 20%, 18% 18%, 20% 20%, 15% 15%, 10% 10%, 20% 20%;
+        }
+
+        .bubbly-button:active {
+            transform: scale(0.9);
+            background-color: #e60074;
+            box-shadow: 0 2px 25px rgba(255, 0, 130, 0.2);
+        }
+
+        .bubbly-button.animate:before {
+            display: block;
+            animation: topBubbles ease-in-out 0.75s forwards;
+        }
+
+        .bubbly-button.animate:after {
+            display: block;
+            animation: bottomBubbles ease-in-out 0.75s forwards;
+        }
+
+        @keyframes topBubbles {
+            0% {
+                background-position: 5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%, 25% 90%, 40% 90%, 55% 90%, 70% 90%;
+            }
+            50% {
+                background-position: 0% 80%, 0% 20%, 10% 40%, 20% 0%, 30% 30%, 22% 50%, 50% 50%, 65% 20%, 90% 30%;
+            }
+            100% {
+                background-position: 0% 70%, 0% 10%, 10% 30%, 20% -10%, 30% 20%, 22% 40%, 50% 40%, 65% 10%, 90% 20%;
+                background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+            }
+        }
+
+        @keyframes bottomBubbles {
+            0% {
+                background-position: 10% -10%, 30% 10%, 55% -10%, 70% -10%, 85% -10%, 70% -10%, 70% 0%;
+            }
+            50% {
+                background-position: 0% 80%, 20% 80%, 45% 60%, 60% 100%, 75% 70%, 95% 60%, 105% 0%;
+            }
+            100% {
+                background-position: 0% 90%, 20% 90%, 45% 70%, 60% 110%, 75% 80%, 95% 70%, 110% 10%;
+                background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+            }
+        }
+
     </style>
 </head>
-
 <body class="bg-cus clearfix">
+<div class="modal" aria-hidden="true" id="waiting-page">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="word">Please&nbsp;wait&nbsp;until&nbsp;the&nbsp;admin&nbsp;starts&nbsp;the&nbsp;test</div>
+                <div class="overlay"></div>
+                <button class="bubbly-button">Refresh</button>
+            </div>
+        </div>
+    </div>
+</div>
 <fieldset class="text-light clearfix">
     <img src="https://raw.githubusercontent.com/ajaxorg/ace/master/api/resources/images/ace_logo.png" alt=""/>
     <div style="font-size: 25px;text-align: center;">
@@ -344,6 +492,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
         integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lettering.js/0.7.0/jquery.lettering.min.js"
+        integrity="sha512-9ex1Kp3S7uKHVZmQ44o5qPV6PnP8/kYp8IpUHLDJ+GZ/qpKAqGgEEH7rhYlM4pTOSs/WyHtPubN2UePKTnTSww=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
         crossorigin="anonymous"></script>
@@ -356,6 +507,107 @@
     // $(window).blur(e => {
     //     $("#logout").submit();
     // })
+    var animateButton = function (e) {
+        e.preventDefault;
+        e.target.classList.remove('animate');
+        e.target.classList.add('animate');
+        setTimeout(function () {
+            e.target.classList.remove('animate');
+        }, 700);
+    };
+
+    const bubblyButtons = document.getElementsByClassName("bubbly-button");
+
+    for (let i = 0; i < bubblyButtons.length; i++) {
+        bubblyButtons[i].addEventListener('click', animateButton, false);
+    }
+    if ("{{ started }}" === "false") {
+        const myModal = new bootstrap.Modal(document.getElementById('waiting-page'), {
+            keyboard: false,
+        });
+
+        function Ticker(elem) {
+            elem.lettering();
+            this.done = false;
+            this.cycleCount = 5;
+            this.cycleCurrent = 0;
+            this.chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()-_=+{}|[]\\;\':"<>?,./`~'.split('');
+            this.charsCount = this.chars.length;
+            this.letters = elem.find('span');
+            this.letterCount = this.letters.length;
+            this.letterCurrent = 0;
+
+            this.letters.each(function () {
+                var $this = $(this);
+                $this.attr('data-orig', $this.text());
+                $this.text('-');
+            });
+        }
+
+        Ticker.prototype.getChar = function () {
+            return this.chars[Math.floor(Math.random() * this.charsCount)];
+        };
+
+        Ticker.prototype.reset = function () {
+            this.done = false;
+            this.cycleCurrent = 0;
+            this.letterCurrent = 0;
+            this.letters.each(function () {
+                const $this = $(this);
+                $this.text($this.attr('data-orig'));
+                $this.removeClass('done');
+            });
+            this.loop();
+        };
+
+        Ticker.prototype.loop = function () {
+            var self = this;
+
+            this.letters.each(function (index, elem) {
+                var $elem = $(elem);
+                if (index >= self.letterCurrent) {
+                    if ($elem.text() != ' ') {
+                        $elem.text(self.getChar());
+                        $elem.css('opacity', Math.random());
+                    } else {
+                        $elem.text(`&nbsp;`);
+                        $elem.css('opacity', Math.random());
+                    }
+                }
+            });
+
+            if (this.cycleCurrent < this.cycleCount) {
+                this.cycleCurrent++;
+            } else if (this.letterCurrent < this.letterCount) {
+                var currLetter = this.letters.eq(this.letterCurrent);
+                this.cycleCurrent = 0;
+                currLetter.text(currLetter.attr('data-orig')).css('opacity', 1).addClass('done');
+                this.letterCurrent++;
+            } else {
+                this.done = true;
+            }
+
+            if (!this.done) {
+                requestAnimationFrame(function () {
+                    self.loop();
+                });
+            } else {
+                setTimeout(function () {
+                    self.reset();
+                }, 750);
+            }
+        };
+
+        $words = $('.word');
+
+        $words.each(function () {
+            var $this = $(this)
+            var ticker = new Ticker($this).reset();
+            $this.data('ticker', ticker);
+        });
+        myModal.show();
+    }
+
 
     const theme = "ace/theme/monokai";
     const lang = l => l === 1 ? "python" : l === 2 ? "java" : "c_cpp";

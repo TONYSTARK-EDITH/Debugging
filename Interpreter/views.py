@@ -12,6 +12,23 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import requires_csrf_token
 from .models import *
+from django.db import connection
+from contextlib import closing
+from django.utils import timezone
+
+
+def sql_simple_insert_executemany(file):
+    query = f"INSERT INTO Interpreter_players (username, password, first_name, email,is_superuser,last_name,is_staff," \
+            f"is_active,last_login,date_joined,is_online) VALUES " \
+            f"{', '.join(['(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'] * len(file.values))}"
+    params = []
+    for i in file.values:
+        params.extend(
+            [i[2].strip(), make_password(i[3].strip(), None, 'md5'), i[0].strip(), i[1].strip(), False, "", True, True,
+             None,
+             timezone.now(), False])
+    with closing(connection.cursor()) as cursor:
+        cursor.execute(query, params)
 
 
 def custom_formatter(string: str) -> list:
@@ -85,15 +102,18 @@ def compare_testcases(output, testcases):
 @login_required
 @requires_csrf_token
 def code_editor(request):
-    q = Questions.objects.filter(question_type=AdminPriv.objects.get(pk=1).type)
-    res = []
+    question_type = AdminPriv.objects.get(pk=1).type
+    q, res, started = [], [], "false"
+    if question_type != 0:
+        q = Questions.objects.filter(question_type=question_type)
+        started = "true"
     name = Players.objects.get(username=request.user).first_name
     for i in q:
         t = TestCases.objects.get(question_id=i).testcases
         s = custom_formatter(t)
         res.append([i.question_code, i.lang, i.question, s[:2]])
     return render(request, "codeEditor.html",
-                  {"res": res, "n": len(res), "name": name})
+                  {"res": res, "n": len(res), "name": name, "started": started})
 
 
 @login_required
@@ -149,7 +169,7 @@ def logout_user(request):
 def user_add(request):
     fi = pd.read_csv(request.FILES["files"])
     us = [Players(username=i[2].strip(),
-                  password=make_password(i[3].strip()),
+                  password=make_password(i[3].strip(), None, 'md5'),
                   first_name=i[0].strip(),
                   email=i[1].strip()) for i in fi.values]
     Players.objects.bulk_create(us, ignore_conflicts=True)

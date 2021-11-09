@@ -5,16 +5,19 @@ from django_sharding_library.models import ShardedByMixin
 
 
 class AdminPriv(models.Model):
+    class Meta:
+        verbose_name_plural = "AdminPriv"
+
     class QuestionType(models.IntegerChoices):
+        DEF = 0, "Default"
         EAS = 1, "Easy"
         MED = 2, "Medium"
         HIG = 3, "High"
 
-    type = models.SmallIntegerField(choices=QuestionType.choices, default=QuestionType.EAS, )
-    started = models.BooleanField(default=False)
+    type = models.SmallIntegerField(choices=QuestionType.choices, default=QuestionType.DEF, )
 
 
-class Players(AbstractUser, ShardedByMixin):
+class Players(AbstractUser):
     class Meta:
         verbose_name_plural = "Players"
 
