@@ -64,7 +64,7 @@
         .right-wrapper {
             position: relative;
             width: 50% !important;
-            height: auto;
+            height: 518px;
             float: right;
             box-shadow: rgba(168, 7, 123, 0.4) 0px 0px 0px 2px, rgba(44, 6, 33, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;
         }
@@ -197,7 +197,7 @@
                             </div>
                             <div class="right-wrapper d-flex flex-column bg-cus me-3 clearfix">
 
-                                <div class="ace" id="ace-{{ forloop.counter }}"
+                                <div class="ace rounded" id="ace-{{ forloop.counter }}"
                                      style="height: 430px !important;"></div>
                                 <div class="button d-inline-flex flex-row position-relative clearfix"
                                      style="top: 444px;">
@@ -207,6 +207,8 @@
                                     <button class="btn btn-primary p-2 m-2 clearfix"
                                             onclick="runCode('ace-{{ forloop.counter }}');">Run
                                     </button>
+                                    <a class="visually-hidden" id="b-{{ counter }}"
+                                       href="#collapseExample-{{ counter }}"></a>
                                 </div>
                                 <br>
                                 <div class="progress position-relative bg-cus visually-hidden clearfix progress-{{ counter }}"
@@ -220,7 +222,7 @@
                                 </div>
                                 <div class="position-absolute visually-hidden clearfix a-{{ counter }}"
                                      style="width:100%!important;min-height: 120px;top: 520px;box-shadow: rgba(168, 7, 123, 0.4) 0px 0px 0px 2px, rgba(44, 6, 33, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;">
-                                    <div class="collapse" id="collapseExample-{{ counter }}">
+                                    <div class="collapse p-2" id="collapseExample-{{ counter }}">
                                         <div class="card card-body bg-cus" id="output" style="width: 700px;">
                                             <div class="card-title c-{{ forloop.counter }}">
                                             </div>
@@ -276,7 +278,7 @@
                                 </div>
                             </div>
                             <div class="right-wrapper clearfix d-flex flex-column bg-cus me-3">
-                                <div class="ace clearfix" id="ace-{{ forloop.counter }}"
+                                <div class="ace rounded clearfix" id="ace-{{ forloop.counter }}"
                                      style="height: 430px !important;"></div>
                                 <br>
                                 <div class="button d-inline-flex clearfix flex-row position-relative"
@@ -287,6 +289,8 @@
                                     <button class="btn clearfix btn-primary p-2"
                                             onclick="runCode('ace-{{ forloop.counter }}');">Run
                                     </button>
+                                    <a class="visually-hidden" id="b-{{ counter }}"
+                                       href="#collapseExample-{{ counter }}"></a>
                                 </div>
                                 <br>
                                 <div class="progress clearfix position-relative bg-cus visually-hidden progress-{{ counter }}"
@@ -301,7 +305,7 @@
                                 </div>
                                 <div class="position-absolute clearfix visually-hidden a-{{ counter }}"
                                      style="width:100%!important;min-height: 120px;top: 520px;box-shadow: rgba(168, 7, 123, 0.4) 0px 0px 0px 2px, rgba(44, 6, 33, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;">
-                                    <div class="collapse" id="collapseExample-{{ counter }}">
+                                    <div class="collapse p-2" id="collapseExample-{{ counter }}">
                                         <div class="card card-body bg-cus" id="output-{{ forloop.counter }}"
                                              style="width: 700px;">
                                             <div class="card-title c-{{ forloop.counter }}">
@@ -354,11 +358,10 @@
     // })
 
     const theme = "ace/theme/monokai";
-    const lang = l => l == "1" ? "python" : l == "2" ? "java" : "c_cpp";
+    const lang = l => l === 1 ? "python" : l === 2 ? "java" : "c_cpp";
     for (let i = 1; i <= "{{ n }}"; ++i) {
         const decoder = $(`#decode-${i}`);
         const mode = `ace/mode/${lang(decoder.data("lang"))}`;
-        console.log(mode);
         const editor = ace.edit(`ace-${i}`);
         editor.setTheme(theme);
         const code = decoder.text() + "\n";
@@ -368,6 +371,12 @@
 
     document.onreadystatechange = () => {
         if (document.readyState === "complete") {
+            for (let i = 1; i <= "{{ n }}"; ++i) {
+                const myCollapsible = $(`#collapseExample-${i}`);
+                myCollapsible.on('hidden.bs.collapse', () => {
+                    $(`.a-${i}`).addClass("visually-hidden");
+                });
+            }
             const compareDate = new Date();
             compareDate.setDate(compareDate.getDate() + 7);
             let timerInterval = setInterval(() => {
@@ -394,7 +403,7 @@
         const code = editor.getValue();
         let l = lang($(`#decode-${num}`).data("lang"))
         l = l === "c_cpp" ? "c" : (l === "python") ? "python3" : l;
-        let id_ = `#collapseExample-${num}`;
+        const id_ = `#collapseExample-${num}`;
         let data = {
             "id": num,
             "code": code,
@@ -409,6 +418,7 @@
             success: res => {
                 $(`.progress-${num}`).addClass("visually-hidden");
                 $(`.a-${num}`).removeClass("visually-hidden");
+                document.getElementById(`b-${num}`).click();
                 const ele = $(`.c-${num}`);
                 if (res.success === 1) {
                     ele.html(`<span class='text-success h1'>${res.res}<\span>`);
