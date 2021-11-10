@@ -9,6 +9,10 @@
     <title>Code Editor</title>
     <meta name="description" content=""/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous"/>
     <style>
@@ -59,7 +63,7 @@
             float: left;
             padding: 5px;
             height: max-content;
-            box-shadow: rgba(168, 7, 123, 0.4) 0px 0px 0px 2px, rgba(44, 6, 33, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;
+            box-shadow: rgba(168, 7, 123, 0.4) 0 0 0 2px, rgba(44, 6, 33, 0.65) 0 4px 6px -1px, rgba(255, 255, 255, 0.08) 0 1px 0 inset;
         }
 
         .right-wrapper {
@@ -67,7 +71,7 @@
             width: 50% !important;
             height: 518px;
             float: right;
-            box-shadow: rgba(168, 7, 123, 0.4) 0px 0px 0px 2px, rgba(44, 6, 33, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;
+            box-shadow: rgba(168, 7, 123, 0.4) 0 0 0 2px, rgba(44, 6, 33, 0.65) 0 4px 6px -1px, rgba(255, 255, 255, 0.08) 0 1px 0 inset;
         }
 
         .ace {
@@ -140,6 +144,7 @@
             margin: auto;
             right: 0;
             position: absolute;
+            width: fit-content;
             text-shadow: 0 0 10px rgba(50, 255, 50, 0.5), 0 0 5px rgba(100, 255, 100, 0.5);
             top: 0
         }
@@ -236,24 +241,24 @@
                 background-position: 5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%, 25% 90%, 40% 90%, 55% 90%, 70% 90%;
             }
             50% {
-                background-position: 0% 80%, 0% 20%, 10% 40%, 20% 0%, 30% 30%, 22% 50%, 50% 50%, 65% 20%, 90% 30%;
+                background-position: 0 80%, 0 20%, 10% 40%, 20% 0, 30% 30%, 22% 50%, 50% 50%, 65% 20%, 90% 30%;
             }
             100% {
-                background-position: 0% 70%, 0% 10%, 10% 30%, 20% -10%, 30% 20%, 22% 40%, 50% 40%, 65% 10%, 90% 20%;
-                background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+                background-position: 0 70%, 0 10%, 10% 30%, 20% -10%, 30% 20%, 22% 40%, 50% 40%, 65% 10%, 90% 20%;
+                background-size: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0;
             }
         }
 
         @keyframes bottomBubbles {
             0% {
-                background-position: 10% -10%, 30% 10%, 55% -10%, 70% -10%, 85% -10%, 70% -10%, 70% 0%;
+                background-position: 10% -10%, 30% 10%, 55% -10%, 70% -10%, 85% -10%, 70% -10%, 70% 0;
             }
             50% {
-                background-position: 0% 80%, 20% 80%, 45% 60%, 60% 100%, 75% 70%, 95% 60%, 105% 0%;
+                background-position: 0 80%, 20% 80%, 45% 60%, 60% 100%, 75% 70%, 95% 60%, 105% 0;
             }
             100% {
-                background-position: 0% 90%, 20% 90%, 45% 70%, 60% 110%, 75% 80%, 95% 70%, 110% 10%;
-                background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+                background-position: 0 90%, 20% 90%, 45% 70%, 60% 110%, 75% 80%, 95% 70%, 110% 10%;
+                background-size: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0;
             }
         }
 
@@ -264,9 +269,12 @@
     <div class="modal-dialog modal-fullscreen">
         <div class="modal-content">
             <div class="modal-body">
-                <div class="word">Please&nbsp;wait&nbsp;until&nbsp;the&nbsp;admin&nbsp;starts&nbsp;the&nbsp;test</div>
-                <div class="overlay"></div>
-                <button class="bubbly-button">Refresh</button>
+                <div class="word text-break">Please&nbsp;wait&nbsp;until&nbsp;the&nbsp;admin&nbsp;starts&nbsp;the&nbsp;test</div>
+                <div class="overlay text-break"></div>
+                <div style="top: calc(100vh - 50%); position: relative;width: fit-content;left: calc(45% - 250px);overflow: hidden"
+                     class="bubble">
+                    <button class="animate__animated animate__flipInX animate__slower bubbly-button">Refresh</button>
+                </div>
             </div>
         </div>
     </div>
@@ -369,7 +377,7 @@
                                     </div>
                                 </div>
                                 <div class="position-absolute visually-hidden clearfix a-{{ counter }}"
-                                     style="width:100%!important;min-height: 120px;top: 520px;box-shadow: rgba(168, 7, 123, 0.4) 0px 0px 0px 2px, rgba(44, 6, 33, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;">
+                                     style="width:100%!important;min-height: 120px;top: 520px;box-shadow: rgba(168, 7, 123, 0.4) 0 0 0 2px, rgba(44, 6, 33, 0.65) 0 4px 6px -1px, rgba(255, 255, 255, 0.08) 0 1px 0 inset;">
                                     <div class="collapse p-2" id="collapseExample-{{ counter }}">
                                         <div class="card card-body bg-cus" id="output" style="width: 700px;">
                                             <div class="card-title c-{{ forloop.counter }}">
@@ -452,7 +460,7 @@
                                     </div>
                                 </div>
                                 <div class="position-absolute clearfix visually-hidden a-{{ counter }}"
-                                     style="width:100%!important;min-height: 120px;top: 520px;box-shadow: rgba(168, 7, 123, 0.4) 0px 0px 0px 2px, rgba(44, 6, 33, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;">
+                                     style="width:100%!important;min-height: 120px;top: 520px;box-shadow: rgba(168, 7, 123, 0.4) 0 0 0 2px, rgba(44, 6, 33, 0.65) 0 4px 6px -1px, rgba(255, 255, 255, 0.08) 0 1px 0 inset;">
                                     <div class="collapse p-2" id="collapseExample-{{ counter }}">
                                         <div class="card card-body bg-cus" id="output-{{ forloop.counter }}"
                                              style="width: 700px;">
@@ -489,6 +497,7 @@
     </div>
 
 </div>
+<script type="text/javascript" src="{% static 'js/anime.min.js' %}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
         integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -513,6 +522,7 @@
         e.target.classList.add('animate');
         setTimeout(function () {
             e.target.classList.remove('animate');
+            location.reload();
         }, 700);
     };
 
@@ -522,6 +532,20 @@
         bubblyButtons[i].addEventListener('click', animateButton, false);
     }
     if ("{{ started }}" === "false") {
+        anime({
+            targets: '.bubble',
+            translateX: {
+                value: 250,
+                duration: 800
+            },
+            rotate: {
+                value: 360,
+                duration: 1800,
+                easing: 'easeInOutSine'
+            },
+        });
+
+
         const myModal = new bootstrap.Modal(document.getElementById('waiting-page'), {
             keyboard: false,
         });

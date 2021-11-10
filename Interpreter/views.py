@@ -15,6 +15,7 @@ from .models import *
 from django.db import connection
 from contextlib import closing
 from django.utils import timezone
+from django.http import Http404
 
 
 def sql_simple_insert_executemany(file):
@@ -119,7 +120,8 @@ def code_editor(request):
 @login_required
 @requires_csrf_token
 def get_output(request):
-    if request.is_ajax():
+    is_ajax = request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
+    if is_ajax:
         code = request.POST.get("code")
         lang = request.POST.get("lang")
         pk_id = int(request.POST.get('id'))
@@ -146,15 +148,19 @@ def get_output(request):
                 return JsonResponse({"success": -1, "res": "Private test cases failed"})
         return JsonResponse({"success": 1, "res": "All test cases have been passed"})
     else:
-        pass
+        raise Http404()
 
 
 @login_required
 @requires_csrf_token
 def admin_panel(request):
-    u = Players.objects.all().filter(~Q(pk=1))
-    return render(request, "adminPanel.html",
-                  {"users": [(player.username, player.is_online, player.first_name) for player in u]})
+    if request.user.is_superuser:
+        u = Players.objects.all().filter(~Q(pk=1))
+        return render(request, "adminPanel.html",
+                      {"users": [(player.username, player.is_online, player.first_name) for player in u],
+                       "type": AdminPriv.objects.get(pk=1).type})
+    else:
+        return redirect("Home")
 
 
 @login_required
@@ -167,25 +173,50 @@ def logout_user(request):
 @login_required
 @requires_csrf_token
 def user_add(request):
-    fi = pd.read_csv(request.FILES["files"])
-    us = [Players(username=i[2].strip(),
-                  password=make_password(i[3].strip(), None, 'md5'),
-                  first_name=i[0].strip(),
-                  email=i[1].strip()) for i in fi.values]
-    Players.objects.bulk_create(us, ignore_conflicts=True)
-    return redirect("Admin", permanent=True)
+    if request.user.is_superuser:
+        fi = pd.read_csv(request.FILES["files"])
+        us = [Players(username=i[2].strip(),
+                      password=make_password(i[3].strip(), None, 'md5'),
+                      first_name=i[0].strip(),
+                      email=i[1].strip()) for i in fi.values]
+        Players.objects.bulk_create(us, ignore_conflicts=True)
+        return redirect("Admin", permanent=True)
+    else:
+        raise Http404()
 
 
 @login_required
 @requires_csrf_token
 def question_add(request):
-    fi = pd.read_csv(request.FILES["files"])
-    questions = [
-        Questions(question=i[0], question_code=i[1], question_type=int(i[2]), question_time=int(i[3]), lang=int(i[4]))
-        for i in fi.values]
-    Questions.objects.bulk_create(questions, ignore_conflicts=True)
-    test_cases = [
-        TestCases(testcases=i[5], question_id=Questions.objects.get(pk=index + 1)) for index, i in enumerate(fi.values)
-    ]
-    TestCases.objects.bulk_create(test_cases, ignore_conflicts=True)
-    return redirect("Admin", permanent=True)
+    if request.user.is_superuser:
+        fi = pd.read_csv(request.FILES["files"])
+        questions = [
+            Questions(question=i[0], question_code=i[1], question_type=int(i[2]), question_time=int(i[3]),
+                      lang=int(i[4]))
+            for i in fi.values]
+        Questions.objects.bulk_create(questions, ignore_conflicts=True)
+        test_cases = [
+            TestCases(testcases=i[5], question_id=Questions.objects.get(pk=index + 1)) for index, i in
+            enumerate(fi.values)
+        ]
+        TestCases.objects.bulk_create(test_cases, ignore_conflicts=True)
+        return redirect("Admin", permanent=True)
+    else:
+        raise Http404()
+
+
+@login_required
+@requires_csrf_token
+def start_test(request):
+    is_ajax = request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
+    if is_ajax:
+        starter = AdminPriv.objects.get(pk=1)
+        starter.type = request.POST.get("type")
+        starter.save()
+        return JsonResponse({})
+    else:
+        raise Http404()
+
+
+def handler404(request, exception=None):
+    return render(request, template_name="Error.html", status=404)

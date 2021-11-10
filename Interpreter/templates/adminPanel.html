@@ -9,7 +9,12 @@
     <title>Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="{% static 'css/fakescroll.css' %}">
     <style>
+        body {
+            overflow: hidden;
+        }
+
         .bd-placeholder-img {
             font-size: 1.125rem;
             text-anchor: middle;
@@ -57,8 +62,7 @@
         }
 
         #dashboard {
-            max-height: 25em !important;
-            overflow-y: auto;
+            max-height: 35em !important;
         }
 
     </style>
@@ -76,7 +80,7 @@
     </symbol>
     <symbol id="home" viewBox="0 0 16 16">
         <path
-                d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146zM2.5 14V7.707l5.5-5.5 5.5 5.5V14H10v-4a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v4H2.5z"/>
+                d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146zM2.5 14V7.707l5.5-5.5 5.5 5.5V14H10v-4a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v4H2.5z"></path>
     </symbol>
     <symbol id="speedometer2" viewBox="0 0 16 16">
         <path
@@ -163,7 +167,7 @@
             <hr/>
             <ul class="nav nav-pills flex-column mb-auto" role="tablist">
                 <li class="nav-item">
-                    <button class="nav-link active" data-bs-toggle="pill" aria-current="page" role="tab"
+                    <button class="nav-link text-white active" data-bs-toggle="pill" aria-current="page" role="tab"
                             aria-selected="true" data-bs-target="#dashboard">
                         <svg class="bi me-2" width="16" height="16">
                             <use xlink:href="#home"/>
@@ -242,7 +246,8 @@
               align-items-center
             " role="tablist">
                 <li class="nav-item">
-                    <button class="nav-link active py-3" aria-current="page" title="Dashboard" data-toggle="tooltip"
+                    <button class="nav-link text-white active py-3" aria-current="page" title="Dashboard"
+                            data-toggle="tooltip"
                             data-bs-placement="right" data-bs-toggle="pill" role="tab" aria-selected="true"
                             data-bs-target="#dashboard">
                         <svg class="bi" width="24" height="24" role="img" aria-label="Dashboard">
@@ -251,7 +256,8 @@
                     </button>
                 </li>
                 <li>
-                    <button class="nav-link py-3" title="Users" data-toggle="tooltip" data-bs-placement="right"
+                    <button class="nav-link text-white py-3" title="Users" data-toggle="tooltip"
+                            data-bs-placement="right"
                             data-bs-toggle="pill" role="tab" aria-selected="false" data-bs-target="#users">
                         <svg class="bi" width="24" height="24" role="img" aria-label="Users">
                             <use xlink:href="#speedometer2"/>
@@ -259,7 +265,8 @@
                     </button>
                 </li>
                 <li>
-                    <button class="nav-link py-3" title="Questions" data-toggle="tooltip" data-bs-placement="right"
+                    <button class="nav-link text-white py-3" title="Questions" data-toggle="tooltip"
+                            data-bs-placement="right"
                             data-bs-toggle="pill" role="tab" aria-selected="false" data-bs-target="#questions">
                         <svg class="bi" width="24" height="24" role="img" aria-label="Questions">
                             <use xlink:href="#table"/>
@@ -293,7 +300,105 @@
         </div>
     </div>
     <div class="tab-content">
-        <div class="tab-pane fade show active" id="dashboard" role="tabpanel">
+        <div class="tab-pane fade show new active" id="dashboard" role="tabpanel">
+            <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+                <div id="liveToast" class="toast bg-dark text-white" role="alert" aria-live="assertive"
+                     aria-atomic="true">
+                    <div class="toast-header bg-dark text-white">
+                        <strong class="me-auto">Bootstrap</strong>
+                        <small>11 mins ago</small>
+                        <button type="button" class="btn-close bg-light" data-bs-dismiss="toast"
+                                aria-label="Close"></button>
+                    </div>
+                    <div class="toast-body">
+                        Hello, world! This is a toast message.
+                    </div>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover caption-top">
+                    <caption>
+                        Decision panel
+                    </caption>
+                    <thead class="table-dark">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Event Type</th>
+                        <th scope="col">Time</th>
+                        <th scope="col">Handle</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <th scope="row">1</th>
+                        <td>Easy</td>
+                        <td>10 min</td>
+                        <td class="text-center">
+                            {% if type == 1 %}
+                                <button id="easy" class="btn btn-danger rounded visually-hidden"
+                                        onclick="startTest(this.id)">Start
+                                </button>
+                                <button id="easy-end" class="btn btn-danger rounded"
+                                        onclick="startTest(this.id)">Stop
+                                </button>
+                            {% else %}
+
+                                <button id="easy" class="btn btn-danger rounded" onclick="startTest(this.id)">Start
+                                </button>
+                                <button id="easy-end" class="btn btn-danger rounded visually-hidden"
+                                        onclick="startTest(this.id)">Stop
+                                </button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">2</th>
+                        <td>Medium</td>
+                        <td>15 min</td>
+                        <td class="text-center">
+                            {% if type == 2 %}
+
+                                <button id="medium" class="btn btn-danger rounded visually-hidden"
+                                        onclick="startTest(this.id)">Start
+                                </button>
+                                <button id="medium-end" class="btn btn-success rounded"
+                                        onclick="startTest(this.id)">Stop
+                                </button>
+                            {% else %}
+                                <button id="medium" class="btn btn-danger rounded" onclick="startTest(this.id)">Start
+                                </button>
+                                <button id="medium-end" class="btn btn-success rounded visually-hidden"
+                                        onclick="startTest(this.id)">Stop
+                                </button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">2</th>
+                        <td>Hard</td>
+                        <td>25 min</td>
+                        <td class="text-center">
+                            {% if type == 3 %}
+                                <button id="hard" class="btn btn-danger rounded visually-hidden"
+                                        onclick="startTest(this.id)">Start
+                                </button>
+                                <button id="hard-end" class="btn btn-success rounded"
+                                        onclick="startTest(this.id)">Stop
+                                </button>
+
+                            {% else %}
+                                <button id="hard" class="btn btn-danger rounded" onclick="startTest(this.id)">Start
+                                </button>
+                                <button id="hard-end" class="btn btn-success rounded visually-hidden"
+                                        onclick="startTest(this.id)">Stop
+                                </button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
             <div class="table-responsive">
                 <table class="table table-bordered table-striped table-hover caption-top">
                     <caption>
@@ -319,8 +424,8 @@
                                     <img src="{% static 'img/status_online.svg' %}" alt="Online"/> {% else %}
                                     <img src="{% static 'img/status_offline.svg' %}" alt="Offline"/> {% endif %}
                             </td>
-                            <td>
-                                <button class="btn-danger">Delete</button>
+                            <td class="text-center">
+                                <button class="btn btn-danger rounded">Delete</button>
                             </td>
                         </tr>
                     {% endfor %}
@@ -363,18 +468,49 @@
         </div>
     </div>
 </main>
+<script type="text/javascript" src="{% static 'js/fakescroll.js' %}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
         integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
         crossorigin="anonymous"></script>
-<script src="{% static 'js/sidebars.js' %}"></script>
 <script>
-    var tooltipTriggerList = [].slice.call(
+    document.querySelector('.new').fakeScroll();
+    const tooltipTriggerList = [].slice.call(
         document.querySelectorAll('[data-toggle="tooltip"]')
     );
-    var tooltipList = tooltipTriggerList.map((e) => new bootstrap.Tooltip(e));
+    const tooltipList = tooltipTriggerList.map((e) => new bootstrap.Tooltip(e));
+    const startTest = type => {
+        let t = type === "easy" ? 1 : (type === "medium" ? 2 : type === "hard" ? 3 : 0);
+        const data = {
+            "csrfmiddlewaretoken": "{{ csrf_token }}",
+            "type": t,
+        }
+        console.log(t);
+        $.ajax({
+            url: "/start",
+            method: "post",
+            data: data,
+            dataType: "json",
+            success: () => {
+                if (t === 0) {
+                    $("#" + type).addClass("visually-hidden");
+                    $("#" + type.split("-")[0]).removeClass("visually-hidden");
+                    $(".toast-body").text("Exam stopped");
+                } else {
+                    $("#" + type).addClass("visually-hidden");
+                    $("#" + type + "-end").removeClass("visually-hidden");
+                    $(".toast-body").text("Exam started");
+                }
+                const toastLiveExample = document.getElementById('liveToast');
+                const toast = new bootstrap.Toast(toastLiveExample);
+                toast.show();
+            }
+        })
+
+    }
+
 </script>
 </body>
 
