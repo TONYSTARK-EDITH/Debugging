@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import User
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django_sharding_library.models import ShardedByMixin
 
@@ -15,6 +16,7 @@ class AdminPriv(models.Model):
         HIG = 3, "High"
 
     type = models.SmallIntegerField(choices=QuestionType.choices, default=QuestionType.DEF, )
+    time = models.CharField(default="", max_length=1000)
 
 
 class Players(AbstractUser):
@@ -22,6 +24,8 @@ class Players(AbstractUser):
         verbose_name_plural = "Players"
 
     is_online = models.BooleanField(default=False)
+    program_completed = ArrayField(models.IntegerField(null=True, blank=True), size=10, default=[0] * 10)
+    program_code = ArrayField(models.TextField(null=True, blank=True), size=10, default=[""] * 10)
 
 
 class Questions(models.Model):
@@ -31,8 +35,8 @@ class Questions(models.Model):
         HIG = 3, "High"
 
     class QuestionTime(models.IntegerChoices):
-        EAS = 1, "15 min"
-        MED = 2, "25 min"
+        EAS = 1, "10 min"
+        MED = 2, "20 min"
         HIG = 3, "30 min"
 
     class QuestionLang(models.IntegerChoices):

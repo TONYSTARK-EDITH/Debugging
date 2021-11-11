@@ -265,6 +265,20 @@
     </style>
 </head>
 <body class="bg-cus clearfix">
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="liveToast" class="toast" role="alert" aria-live="assertive"
+         aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto">HYBERBUG</strong>
+            <small>0 mins ago</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast"
+                    aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            Your code saved successfully
+        </div>
+    </div>
+</div>
 <div class="modal" aria-hidden="true" id="waiting-page">
     <div class="modal-dialog modal-fullscreen">
         <div class="modal-content">
@@ -280,7 +294,7 @@
     </div>
 </div>
 <fieldset class="text-light clearfix">
-    <img src="https://raw.githubusercontent.com/ajaxorg/ace/master/api/resources/images/ace_logo.png" alt=""/>
+    <img src="{% static 'img/a.png' %}" alt=""/>
     <div style="font-size: 25px;text-align: center;">
         Welcome, {{ name }}
     </div>
@@ -322,9 +336,9 @@
         <div class="tab-content w-100 clearfix" id="v-pills-tabContent">
             {% for i in res %}
                 {% with counter=forloop.counter %}
-                    {% if forloop.counter == 1 %}
-                        <div class="tab-pane fade show active clearfix" id="v-tab-{{ forloop.counter }}" role="tabpanel"
-                             aria-labelledby="v-pills-{{ forloop.counter }}">
+                    {% if counter == 1 %}
+                        <div class="tab-pane fade show active clearfix" id="v-tab-{{ counter }}" role="tabpanel"
+                             aria-labelledby="v-pills-{{ counter }}">
                             <div class="left-wrapper ms-1 bg-cus user-select-none ps-3 pt-3 clearfix">
                                 <div class="question__header border-bottom border-light w-75 mb-3">
                                     <h2>Question</h2>
@@ -353,15 +367,16 @@
                             </div>
                             <div class="right-wrapper d-flex flex-column bg-cus me-3 clearfix">
 
-                                <div class="ace rounded" id="ace-{{ forloop.counter }}"
+                                <div class="ace rounded" id="ace-{{ counter }}"
                                      style="height: 430px !important;"></div>
                                 <div class="button d-inline-flex flex-row position-relative clearfix"
                                      style="top: 444px;">
-                                    <button class="btn btn-success p-2 m-2 ms-0 me-3 clearfix">
+                                    <button class="btn btn-success p-2 m-2 ms-0 me-3 clearfix"
+                                            onclick="saveCode('ace-{{ counter }}', '{{ i.4 }}');">
                                         Save
                                     </button>
                                     <button class="btn btn-primary p-2 m-2 clearfix"
-                                            onclick="runCode('ace-{{ forloop.counter }}');">Run
+                                            onclick="runCode('ace-{{ counter }}', '{{ i.4 }}');">Run
                                     </button>
                                     <a class="visually-hidden" id="b-{{ counter }}"
                                        href="#collapseExample-{{ counter }}"></a>
@@ -380,9 +395,9 @@
                                      style="width:100%!important;min-height: 120px;top: 520px;box-shadow: rgba(168, 7, 123, 0.4) 0 0 0 2px, rgba(44, 6, 33, 0.65) 0 4px 6px -1px, rgba(255, 255, 255, 0.08) 0 1px 0 inset;">
                                     <div class="collapse p-2" id="collapseExample-{{ counter }}">
                                         <div class="card card-body bg-cus" id="output" style="width: 700px;">
-                                            <div class="card-title c-{{ forloop.counter }}">
+                                            <div class="card-title c-{{ counter }}">
                                             </div>
-                                            <div class="card-text ct-{{ forloop.counter }}">
+                                            <div class="card-text ct-{{ counter }}">
                                                 {% for j in i.3 %}
                                                     <dl>
                                                         <dt>Testcase {{ forloop.counter }} </dt>
@@ -405,8 +420,8 @@
                             </div>
                         </div>
                     {% else %}
-                        <div class="tab-pane fade clearfix" id="v-tab-{{ forloop.counter }}" role="tabpanel"
-                             aria-labelledby="v-pills-{{ forloop.counter }}">
+                        <div class="tab-pane fade clearfix" id="v-tab-{{ counter }}" role="tabpanel"
+                             aria-labelledby="v-pills-{{ counter }}">
                             <div class="left-wrapper clearfix  bg-cus user-select-none ps-3 pt-3">
                                 <div class="question__header clearfix border-bottom border-light w-75 mb-3">
                                     <h2>Question</h2>
@@ -434,16 +449,17 @@
                                 </div>
                             </div>
                             <div class="right-wrapper clearfix d-flex flex-column bg-cus me-3">
-                                <div class="ace rounded clearfix" id="ace-{{ forloop.counter }}"
+                                <div class="ace rounded clearfix" id="ace-{{ counter }}"
                                      style="height: 430px !important;"></div>
                                 <br>
                                 <div class="button d-inline-flex clearfix flex-row position-relative"
                                      style="top: 420px;">
-                                    <button class="btn clearfix btn-success p-2 ms-0 me-3">
+                                    <button class="btn clearfix btn-success p-2 ms-0 me-3"
+                                            onclick="saveCode('ace-{{ counter }}', '{{ i.4 }}');">
                                         Save
                                     </button>
-                                    <button class="btn clearfix btn-primary p-2"
-                                            onclick="runCode('ace-{{ forloop.counter }}');">Run
+                                    <button class="btn clearfix btn-primary p-2" id=""
+                                            onclick="runCode('ace-{{ counter }}', '{{ i.4 }}');">Run
                                     </button>
                                     <a class="visually-hidden" id="b-{{ counter }}"
                                        href="#collapseExample-{{ counter }}"></a>
@@ -516,8 +532,8 @@
     // $(window).blur(e => {
     //     $("#logout").submit();
     // })
-    var animateButton = function (e) {
-        e.preventDefault;
+    const animateButton = function (e) {
+        e.preventDefault();
         e.target.classList.remove('animate');
         e.target.classList.add('animate');
         setTimeout(function () {
@@ -562,7 +578,7 @@
             this.letterCurrent = 0;
 
             this.letters.each(function () {
-                var $this = $(this);
+                const $this = $(this);
                 $this.attr('data-orig', $this.text());
                 $this.text('-');
             });
@@ -585,10 +601,10 @@
         };
 
         Ticker.prototype.loop = function () {
-            var self = this;
+            const self = this;
 
             this.letters.each(function (index, elem) {
-                var $elem = $(elem);
+                const $elem = $(elem);
                 if (index >= self.letterCurrent) {
                     if ($elem.text() != ' ') {
                         $elem.text(self.getChar());
@@ -603,7 +619,7 @@
             if (this.cycleCurrent < this.cycleCount) {
                 this.cycleCurrent++;
             } else if (this.letterCurrent < this.letterCount) {
-                var currLetter = this.letters.eq(this.letterCurrent);
+                const currLetter = this.letters.eq(this.letterCurrent);
                 this.cycleCurrent = 0;
                 currLetter.text(currLetter.attr('data-orig')).css('opacity', 1).addClass('done');
                 this.letterCurrent++;
@@ -625,8 +641,8 @@
         $words = $('.word');
 
         $words.each(function () {
-            var $this = $(this)
-            var ticker = new Ticker($this).reset();
+            const $this = $(this);
+            const ticker = new Ticker($this).reset();
             $this.data('ticker', ticker);
         });
         myModal.show();
@@ -653,8 +669,7 @@
                     $(`.a-${i}`).addClass("visually-hidden");
                 });
             }
-            const compareDate = new Date();
-            compareDate.setDate(compareDate.getDate() + 7);
+            const compareDate = new Date({{ end }});
             let timerInterval = setInterval(() => {
                 const now = new Date().getTime();
                 const difference = compareDate.getTime() - now;
@@ -662,9 +677,10 @@
                     (difference % (1000 * 60 * 60)) / (1000 * 60)
                 );
                 const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-                let ms = Math.floor(difference % 100);
+                let ms = Math.floor(difference % 1000);
                 if (difference <= 0) {
                     clearInterval(timerInterval);
+                    $("#logout").submit();
                 }
                 $("#minutes").text(minutes);
                 $("#seconds").text(seconds);
@@ -672,7 +688,7 @@
             }, 1);
         }
     };
-    runCode = (id) => {
+    const runCode = (id, qid) => {
         let num = parseInt(id.split("-")[1]);
         $(`.progress-${num}`).removeClass("visually-hidden");
         const editor = ace.edit(id);
@@ -681,9 +697,10 @@
         l = l === "c_cpp" ? "c" : (l === "python") ? "python3" : l;
         const id_ = `#collapseExample-${num}`;
         let data = {
-            "id": num,
+            "id": qid,
             "code": code,
             "lang": l,
+            "index": num - 1,
             "csrfmiddlewaretoken": "{{ csrf_token }}",
         }
         $.ajax({
@@ -724,6 +741,30 @@
             }
         })
     }
+
+    const saveCode = (id, qid) => {
+        let num = parseInt(id.split("-")[1]);
+        const editor = ace.edit(id);
+        const code = editor.getValue();
+        let data = {
+            "code": code,
+            "index": num - 1,
+            "csrfmiddlewaretoken": "{{ csrf_token }}",
+        }
+        $.ajax({
+                method: "post",
+                url: "\\save",
+                data: data,
+                dataType: "json",
+                success: () => {
+                    const toastLiveExample = document.getElementById('liveToast');
+                    const toast = new bootstrap.Toast(toastLiveExample);
+                    toast.show();
+                }
+            }
+        )
+    }
+
 
 </script>
 </body>

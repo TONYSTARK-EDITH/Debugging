@@ -228,7 +228,6 @@
             </div>
         </div>
     </div>
-
     <div class="mob d-flex flex-column">
         <div class="d-flex flex-column flex-shrink-0 bg-dark text-white" style="width: 4.5rem; height: 100vh">
             <a class="d-block p-3 link-light text-decoration-none" title="Icon-only" data-bs-toggle="tooltip"
@@ -354,7 +353,7 @@
                     <tr>
                         <th scope="row">2</th>
                         <td>Medium</td>
-                        <td>15 min</td>
+                        <td>20 min</td>
                         <td class="text-center">
                             {% if type == 2 %}
 
@@ -376,7 +375,7 @@
                     <tr>
                         <th scope="row">2</th>
                         <td>Hard</td>
-                        <td>25 min</td>
+                        <td>30 min</td>
                         <td class="text-center">
                             {% if type == 3 %}
                                 <button id="hard" class="btn btn-danger rounded visually-hidden"
@@ -487,7 +486,6 @@
             "csrfmiddlewaretoken": "{{ csrf_token }}",
             "type": t,
         }
-        console.log(t);
         $.ajax({
             url: "/start",
             method: "post",
