@@ -74,6 +74,8 @@ def got_online(sender, user, request, **kwargs):
 
 @receiver(user_logged_out)
 def got_offline(sender, user, request, **kwargs):
+    if request.POST.get("logout") == "1":
+        AdminPriv.objects.filter(pk=1).update(type="0")
     user.is_online = False
     user.save()
 
@@ -110,22 +112,25 @@ def compare_testcases(output, testcases):
 @requires_csrf_token
 def code_editor(request):
     if not request.user.is_superuser:
+        user = Players.objects.get(username=request.user)
         admin = AdminPriv.objects.get(pk=1)
         question_type = admin.type
         end = datetime.strptime(admin.time, TIME_FORMATTER)
-        q, res, started, u = [], [], "false", []
+        q, res, started, u, t = [], [], "false", [], []
         if question_type != 0:
             q = Questions.objects.filter(question_type=question_type)
-            u = Players.objects.get(username=request.user).program_code
+            u = user.program_code
+            t = user.program_completed
             started = "true"
-        name = request.user.first_name
-        for i, j in zip(q, u):
+        name = user.first_name
+        for i, j, k in zip(q, u, t):
             t = TestCases.objects.get(question_id=i).testcases
             s = custom_formatter(t)
-            res.append([j, i.lang, i.question, s[:2], i.pk])
+            res.append([j, i.lang, i.question, s[:2], i.pk, k])
         return render(request, "codeEditor.html",
                       {"res": res, "n": len(res), "name": name, "started": started,
-                       "end": int(time.mktime(end.timetuple())) * 1000})
+                       "end": int(time.mktime(end.timetuple())) * 1000,
+                       "count": user.program_completed.count(1)})
     else:
         return redirect("Admin")
 
@@ -135,6 +140,19 @@ def save_utils(user, code, index):
     lst = player.program_code
     lst[index] = code
     player.program_code = lst
+    player.save()
+
+
+def count_time_utils(user, c_time, index):
+    player = Players.objects.get(username=user)
+    count = player.program_completed
+    timer = player.program_time
+    if count[index] == 1:
+        return
+    count[index] = 1
+    timer[index] = c_time
+    player.program_completed = count
+    player.program_time = timer
     player.save()
 
 
@@ -160,6 +178,7 @@ def get_output(request):
         lang = request.POST.get("lang")
         pk_id = int(request.POST.get('id'))
         index = int(request.POST.get("index"))
+        timer = datetime.now(pytz.timezone("Asia/Kolkata")).strftime(TIME_FORMATTER)
         save_utils(request.user, code, index)
         test_cases = custom_formatter(TestCases.objects.get(question_id=Questions.objects.get(pk=pk_id)).testcases)
         compiler = pydoodle.Compiler(
@@ -182,6 +201,7 @@ def get_output(request):
             output = "\n".join(result.output)
             if not compare_testcases(output, Output):
                 return JsonResponse({"success": -1, "res": "Private test cases failed"})
+        count_time_utils(request.user, timer, index)
         return JsonResponse({"success": 1, "res": "All test cases have been passed"})
     else:
         raise Http404()
@@ -249,15 +269,16 @@ def start_test(request):
         q_type = request.POST.get("type")
         starter = AdminPriv.objects.get(pk=1)
         starter.type = q_type
-        minute = 10 if q_type == "1" else 20 if q_type == "2" else 30 if q_type == "3" else 0
+        minute = int(q_type) * 10
         starter.time = (datetime.now(pytz.timezone("Asia/Kolkata")) + timedelta(minutes=minute)).strftime(
             TIME_FORMATTER)[:-3]
         starter.save()
         if starter.type != "0":
             codes = [i.question_code for i in Questions.objects.filter(question_type=starter.type)]
-            Players.objects.filter(~Q(pk=1)).update(program_code=codes, program_completed=[0] * len(codes))
+            Players.objects.filter(~Q(pk=1)).update(program_code=codes, program_completed=[0] * len(codes),
+                                                    program_time=[""] * len(codes))
         else:
-            Players.objects.filter(~Q(pk=1)).update(program_code=[""], program_completed=[0])
+            Players.objects.filter(~Q(pk=1)).update(program_code=[""], program_completed=[0], program_time=[""])
         return JsonResponse({})
     else:
         raise Http404()

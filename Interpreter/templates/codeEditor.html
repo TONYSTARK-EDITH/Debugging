@@ -15,6 +15,8 @@
     />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous"/>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.0/font/bootstrap-icons.css">
     <style>
         @import url(https://fonts.googleapis.com/css?family=Lato:100,300,400);
         @import url(https://fonts.googleapis.com/css?family=Source+Code+Pro:400);
@@ -296,9 +298,10 @@
 <fieldset class="text-light clearfix">
     <img src="{% static 'img/a.png' %}" alt=""/>
     <div style="font-size: 25px;text-align: center;">
-        Welcome, {{ name }}
+        Welcome, {{ name }} <br>
+        Program Solved : <span id="counter">{{ count }}</span>
     </div>
-    <div class="utils d-flex align-items-center flex-column float-end position-relative" style="top: -28px;">
+    <div class="utils d-flex align-items-center flex-column float-end position-relative" style="top: -74px;">
         <div id="timer float-end position-relative fst-italic" style="width:150px;font-size: 25px;">
             <span id="minutes"></span> : <span id="seconds"></span> :
             <span id="milli-seconds"></span>
@@ -306,6 +309,7 @@
         <div id="sign-out float-end position-relative fst-italic" style="font-size: 25px;">
             <form method="post" id="logout" action="/logout">
                 {% csrf_token %}
+                <input type="hidden" id="si" name="logout" value="0"/>
                 <button type="submit" class="btn btn-outline-danger" onclick="logout();">Sign out</button>
             </form>
         </div>
@@ -317,19 +321,21 @@
              aria-orientation="vertical">
             {% for i in res %}
                 {% if forloop.counter == 1 %}
-                    <button class="nav-link active" id="v-pills-{{ forloop.counter }}" data-bs-toggle="pill"
+                    <button class="nav-link active position-relative" id="v-pills-{{ forloop.counter }}"
+                            data-bs-toggle="pill"
                             data-bs-target="#v-tab-{{ forloop.counter }}"
-                            type="button" role="tab" aria-selected="true">{{ forloop.counter }}
+                            type="button" role="tab" aria-selected="true">
+                        {{ forloop.counter }}
                     </button>
 
                 {% else %}
-                    <button class="nav-link" id="v-pills-{{ forloop.counter }}" data-bs-toggle="pill"
+                    <button class="nav-link position-relative" id="v-pills-{{ forloop.counter }}" data-bs-toggle="pill"
                             data-bs-target="#v-tab-{{ forloop.counter }}"
-                            type="button" role="tab" aria-selected="false">{{ forloop.counter }}
+                            type="button" role="tab" aria-selected="false">
+                        {{ forloop.counter }}
                     </button>
                 {% endif %}
                 <div class="visually-hidden" id="decode-{{ forloop.counter }}" data-lang={{ i.1 }}>{{ i.0 }}</div>
-
             {% endfor %}
 
         </div>
@@ -340,8 +346,16 @@
                         <div class="tab-pane fade show active clearfix" id="v-tab-{{ counter }}" role="tabpanel"
                              aria-labelledby="v-pills-{{ counter }}">
                             <div class="left-wrapper ms-1 bg-cus user-select-none ps-3 pt-3 clearfix">
-                                <div class="question__header border-bottom border-light w-75 mb-3">
+                                <div id="question-{{ counter }}"
+                                     class="question__header border-bottom border-light w-75 mb-3 d-flex flex-row align-items-center justify-content-between">
                                     <h2>Question</h2>
+                                    {% if i.5 == 1 %}
+                                        <span id="completed-{{ counter }}"
+                                              class="ms-auto badge h-25 p-2 rounded-pill bg-success">
+                                            <i class="bi bi-code-slash"></i>
+                                            Completed
+                                        </span>
+                                    {% endif %}
                                 </div>
                                 <div class="question mb-3">
                                     {{ i.2 }}
@@ -369,18 +383,35 @@
 
                                 <div class="ace rounded" id="ace-{{ counter }}"
                                      style="height: 430px !important;"></div>
-                                <div class="button d-inline-flex flex-row position-relative clearfix"
-                                     style="top: 444px;">
-                                    <button class="btn btn-success p-2 m-2 ms-0 me-3 clearfix"
-                                            onclick="saveCode('ace-{{ counter }}', '{{ i.4 }}');">
-                                        Save
-                                    </button>
-                                    <button class="btn btn-primary p-2 m-2 clearfix"
-                                            onclick="runCode('ace-{{ counter }}', '{{ i.4 }}');">Run
-                                    </button>
-                                    <a class="visually-hidden" id="b-{{ counter }}"
-                                       href="#collapseExample-{{ counter }}"></a>
-                                </div>
+                                {% if i.5 == 0 %}
+                                    <div class="button d-inline-flex flex-row position-relative clearfix"
+                                         style="top: 444px;">
+                                        <button id="save-{{ counter }}"
+                                                class="btn btn-success p-2 m-2 ms-0 me-3 clearfix"
+                                                onclick="saveCode('ace-{{ counter }}');">
+                                            Save
+                                        </button>
+                                        <button id="run-{{ counter }}" class="btn btn-primary p-2 m-2 clearfix"
+                                                onclick="runCode('ace-{{ counter }}', '{{ i.4 }}');">Run
+                                        </button>
+                                        <a class="visually-hidden" id="b-{{ counter }}"
+                                           href="#collapseExample-{{ counter }}"></a>
+                                    </div>
+                                {% else %}
+                                    <div class="button d-inline-flex flex-row position-relative clearfix"
+                                         style="top: 444px;">
+                                        <button id="save-{{ counter }}"
+                                                class="btn disabled btn-success p-2 m-2 ms-0 me-3 clearfix"
+                                                onclick="saveCode('ace-{{ counter }}');">
+                                            Save
+                                        </button>
+                                        <button id="run-{{ counter }}" class="btn disabled btn-primary p-2 m-2 clearfix"
+                                                onclick="runCode('ace-{{ counter }}', '{{ i.4 }}');">Run
+                                        </button>
+                                        <a class="visually-hidden" id="b-{{ counter }}"
+                                           href="#collapseExample-{{ counter }}"></a>
+                                    </div>
+                                {% endif %}
                                 <br>
                                 <div class="progress position-relative bg-cus visually-hidden clearfix progress-{{ counter }}"
                                      style="top: 444px;">
@@ -423,8 +454,16 @@
                         <div class="tab-pane fade clearfix" id="v-tab-{{ counter }}" role="tabpanel"
                              aria-labelledby="v-pills-{{ counter }}">
                             <div class="left-wrapper clearfix  bg-cus user-select-none ps-3 pt-3">
-                                <div class="question__header clearfix border-bottom border-light w-75 mb-3">
+                                <div id="question-{{ counter }}"
+                                     class="question__header clearfix border-bottom border-light w-75 mb-3 d-flex flex-row align-items-center justify-content-between">
                                     <h2>Question</h2>
+                                    {% if i.5 == 1 %}
+                                        <span id="completed-{{ counter }}"
+                                              class="ms-auto badge h-25 p-2 rounded-pill bg-success">
+                                            <i class="bi bi-code-slash"></i>
+                                            Completed
+                                        </span>
+                                    {% endif %}
                                 </div>
                                 <div class="question mb-3">
                                     {{ i.2 }}
@@ -452,18 +491,35 @@
                                 <div class="ace rounded clearfix" id="ace-{{ counter }}"
                                      style="height: 430px !important;"></div>
                                 <br>
-                                <div class="button d-inline-flex clearfix flex-row position-relative"
-                                     style="top: 420px;">
-                                    <button class="btn clearfix btn-success p-2 ms-0 me-3"
-                                            onclick="saveCode('ace-{{ counter }}', '{{ i.4 }}');">
-                                        Save
-                                    </button>
-                                    <button class="btn clearfix btn-primary p-2" id=""
-                                            onclick="runCode('ace-{{ counter }}', '{{ i.4 }}');">Run
-                                    </button>
-                                    <a class="visually-hidden" id="b-{{ counter }}"
-                                       href="#collapseExample-{{ counter }}"></a>
-                                </div>
+                                {% if i.5 == 0 %}
+                                    <div class="button d-inline-flex flex-row position-relative clearfix"
+                                         style="top: 444px;">
+                                        <button id="save-{{ counter }}"
+                                                class="btn btn-success p-2 m-2 ms-0 me-3 clearfix"
+                                                onclick="saveCode('ace-{{ counter }}');">
+                                            Save
+                                        </button>
+                                        <button id="run-{{ counter }}" class="btn btn-primary p-2 m-2 clearfix"
+                                                onclick="runCode('ace-{{ counter }}', '{{ i.4 }}');">Run
+                                        </button>
+                                        <a class="visually-hidden" id="b-{{ counter }}"
+                                           href="#collapseExample-{{ counter }}"></a>
+                                    </div>
+                                {% else %}
+                                    <div class="button d-inline-flex flex-row position-relative clearfix"
+                                         style="top: 444px;">
+                                        <button id="save-{{ counter }}"
+                                                class="btn disabled btn-success p-2 m-2 ms-0 me-3 clearfix"
+                                                onclick="saveCode('ace-{{ counter }}');">
+                                            Save
+                                        </button>
+                                        <button id="run-{{ counter }}" class="btn disabled btn-primary p-2 m-2 clearfix"
+                                                onclick="runCode('ace-{{ counter }}', '{{ i.4 }}');">Run
+                                        </button>
+                                        <a class="visually-hidden" id="b-{{ counter }}"
+                                           href="#collapseExample-{{ counter }}"></a>
+                                    </div>
+                                {% endif %}
                                 <br>
                                 <div class="progress clearfix position-relative bg-cus visually-hidden progress-{{ counter }}"
                                      id="p-{{ forloop.counter }}"
@@ -532,6 +588,7 @@
     // $(window).blur(e => {
     //     $("#logout").submit();
     // })
+    const lang = l => l === 1 ? "python" : l === 2 ? "java" : "c_cpp";
     const animateButton = function (e) {
         e.preventDefault();
         e.target.classList.remove('animate');
@@ -560,7 +617,6 @@
                 easing: 'easeInOutSine'
             },
         });
-
 
         const myModal = new bootstrap.Modal(document.getElementById('waiting-page'), {
             keyboard: false,
@@ -606,7 +662,7 @@
             this.letters.each(function (index, elem) {
                 const $elem = $(elem);
                 if (index >= self.letterCurrent) {
-                    if ($elem.text() != ' ') {
+                    if ($elem.text() !== ' ') {
                         $elem.text(self.getChar());
                         $elem.css('opacity', Math.random());
                     } else {
@@ -646,50 +702,57 @@
             $this.data('ticker', ticker);
         });
         myModal.show();
-    }
-
-
-    const theme = "ace/theme/monokai";
-    const lang = l => l === 1 ? "python" : l === 2 ? "java" : "c_cpp";
-    for (let i = 1; i <= "{{ n }}"; ++i) {
-        const decoder = $(`#decode-${i}`);
-        const mode = `ace/mode/${lang(decoder.data("lang"))}`;
-        const editor = ace.edit(`ace-${i}`);
-        editor.setTheme(theme);
-        const code = decoder.text() + "\n";
-        const session = ace.createEditSession(code, mode);
-        editor.setSession(session);
-    }
-
-    document.onreadystatechange = () => {
-        if (document.readyState === "complete") {
-            for (let i = 1; i <= "{{ n }}"; ++i) {
-                const myCollapsible = $(`#collapseExample-${i}`);
-                myCollapsible.on('hidden.bs.collapse', () => {
-                    $(`.a-${i}`).addClass("visually-hidden");
-                });
-            }
-            const compareDate = new Date({{ end }});
-            let timerInterval = setInterval(() => {
-                const now = new Date().getTime();
-                const difference = compareDate.getTime() - now;
-                const minutes = Math.floor(
-                    (difference % (1000 * 60 * 60)) / (1000 * 60)
-                );
-                const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-                let ms = Math.floor(difference % 1000);
-                if (difference <= 0) {
-                    clearInterval(timerInterval);
-                    $("#logout").submit();
-                }
-                $("#minutes").text(minutes);
-                $("#seconds").text(seconds);
-                $("#milli-seconds").text(ms);
-            }, 1);
+    } else {
+        const theme = "ace/theme/monokai";
+        for (let i = 1; i <= "{{ n }}"; ++i) {
+            const decoder = $(`#decode-${i}`);
+            const mode = `ace/mode/${lang(decoder.data("lang"))}`;
+            const editor = ace.edit(`ace-${i}`);
+            editor.setTheme(theme);
+            const code = decoder.text() + "\n";
+            const session = ace.createEditSession(code, mode);
+            editor.setSession(session);
         }
-    };
+
+        document.onreadystatechange = () => {
+            if (document.readyState === "complete") {
+                for (let i = 1; i <= "{{ n }}"; ++i) {
+                    const myCollapsible = $(`#collapseExample-${i}`);
+                    myCollapsible.on('hidden.bs.collapse', () => {
+                        $(`.a-${i}`).addClass("visually-hidden");
+                    });
+                }
+                const compareDate = new Date({{ end }});
+                let timerInterval = setInterval(() => {
+                    const now = new Date().getTime();
+                    const difference = compareDate.getTime() - now;
+                    const minutes = Math.floor(
+                        (difference % (1000 * 60 * 60)) / (1000 * 60)
+                    );
+                    const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+                    let ms = Math.floor(difference % 1000);
+                    if (difference <= 0) {
+                        clearInterval(timerInterval);
+                        $("#si").val("1");
+                        $("#logout").submit();
+                    }
+                    $("#minutes").text(minutes);
+                    $("#seconds").text(seconds);
+                    $("#milli-seconds").text(ms);
+                }, 1);
+            }
+        };
+    }
     const runCode = (id, qid) => {
+
         let num = parseInt(id.split("-")[1]);
+        const myCollapse = $(`#collapseExample-${num}`);
+        myCollapse.on('show.bs.collapse', () => {
+            // do something when enabled
+        });
+        myCollapse.on('hide.bs.collapse', () => {
+        })
+        myCollapse.collapse("hide");
         $(`.progress-${num}`).removeClass("visually-hidden");
         const editor = ace.edit(id);
         const code = editor.getValue();
@@ -719,6 +782,11 @@
                     let ht = ele.html();
                     ele.html(ht + s);
                     $(`.ct-${num}`).html("");
+                    const counter = $("#counter");
+                    counter.html(parseInt(counter.text()) + 1);
+                    $(`#save-${num}`).addClass("disabled");
+                    $(`#run-${num}`).addClass("disabled");
+                    $(`#question-${num}`).append(`<span id="completed-${num}" class="ms-auto badge h-25 p-2 rounded-pill bg-success"><i class="bi bi-code-slash"></i>Completed</span>`)
                 } else if (res.success === -1) {
                     ele.html(`<span class='text-danger h1'>${res.res}<\span>`);
                     let s = `<button type="button" class="btn-close mt-3 bg-light float-end position-relative" data-bs-toggle="collapse" data-bs-target=${id_} aria-label="Close"></button>`;
@@ -734,15 +802,12 @@
                         $(`#o-${num}-${i + 1}`).html(`<pre>${res.base[i]}<\pre>`);
                     }
                 }
-                const myCollapse = document.getElementById(`collapseExample-${num}`);
-                const bsCollapse = new bootstrap.Collapse(myCollapse, {
-                    show: true
-                });
+                myCollapse.collapse("show");
             }
         })
     }
 
-    const saveCode = (id, qid) => {
+    const saveCode = (id) => {
         let num = parseInt(id.split("-")[1]);
         const editor = ace.edit(id);
         const code = editor.getValue();
@@ -764,7 +829,6 @@
             }
         )
     }
-
 
 </script>
 </body>
