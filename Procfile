@@ -1,1 +1,1 @@
-web: gunicorn rice.wsgi
+web: gunicorn Debug.wsgi
