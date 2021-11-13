@@ -7,6 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
+    <link rel="icon" href="{% static 'img/image.png' %}">
     <style>
         @import "https://fonts.googleapis.com/css?family=Bungee+Shade";
 
@@ -14,11 +15,13 @@
             height: 100%;
             overflow: hidden;
         }
+
         @media (max-width: 500px) and (max-height: 900px) {
-            p{
+            p {
                 top: 0 !important;
             }
         }
+
         @media (max-width: 741px) {
             .login-box {
                 width: 340px !important;
@@ -202,6 +205,10 @@
             -webkit-text-fill-color: #ffffff;
             -webkit-box-shadow: transparent;
             transition: background-color 5000s ease-in-out 0s;
+            top: -20px;
+            left: 0;
+            color: #F44788;
+            font-size: 12px;
         }
 
         input:-moz-autofill,
@@ -211,6 +218,10 @@
             -moz-text-fill-color: #ffffff;
             -moz-box-shadow: transparent;
             transition: background-color 5000s ease-in-out 0s;
+            top: -20px;
+            left: 0;
+            color: #F44788;
+            font-size: 12px;
         }
 
         input:-o-autofill,
@@ -219,6 +230,10 @@
         input:-o-autofill:active {
             -o-text-fill-color: #ffffff;
             -o-box-shadow: transparent;
+            top: -20px;
+            left: 0;
+            color: #F44788;
+            font-size: 12px;
             transition: background-color 5000s ease-in-out 0s;
         }
 
@@ -229,6 +244,10 @@
             -khtml-text-fill-color: #ffffff;
             -khtml-box-shadow: transparent;
             transition: background-color 5000s ease-in-out 0s;
+            top: -20px;
+            left: 0;
+            color: #F44788;
+            font-size: 12px;
         }
 
         :root {
@@ -481,12 +500,8 @@
                 --top: 1
             }
         }
-
-
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
-            integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
-            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
 
 </head>
 
@@ -504,6 +519,7 @@
             <input type="password" name="password" id="password" required>
             <label for="password">SECRET KEY</label>
         </div>
+
         <div class="user-box">
             {% if messages %}
                 {% for msg in messages %}
@@ -520,6 +536,9 @@
         </a>
     </form>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+        integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 </body>
 

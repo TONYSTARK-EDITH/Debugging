@@ -18,7 +18,6 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.views.decorators.csrf import requires_csrf_token
-
 from .models import *
 
 TIME_FORMATTER = "%Y-%m-%d %H:%M:%S.%f"
@@ -77,8 +76,14 @@ def got_online(sender, user, request, **kwargs):
 def got_offline(sender, user, request, **kwargs):
     if request.POST.get("logout") == "1":
         AdminPriv.objects.filter(pk=1).update(type="0")
-    user.is_online = False
-    user.save()
+        lst = list(map(lambda x: (
+            x[0].count(1), max(list(map(lambda y: datetime.strptime(y, TIME_FORMATTER), x[1]))), x[2], x[3]),
+                       Players.objects.filter(~Q(pk=1)).values_list('program_completed', 'program_time', 'username',
+                                                                    'first_name', named=True)))
+        lst.sort(key=lambda x: (-x[0], x[1]))
+        print(lst[:16])
+        user.is_online = False
+        user.save()
 
 
 def home(request):
@@ -96,6 +101,10 @@ def login_user(request):
     auth = authenticate(username=username, password=password)
     if auth is not None:
         AdminPriv.objects.get_or_create(pk=1)
+        Compiler.objects.get_or_create(user_name="max", password="max", selected=True,
+                                       client_id=config("CLIENT_ID"),
+                                       client_secret_key=config("CLIENT_SECRET_KEY"))
+
         login(request=request, user=auth)
         if request.user.is_superuser:
             return redirect("Admin", permanent=True)
@@ -182,9 +191,10 @@ def get_output(request):
         timer = datetime.now(pytz.timezone("Asia/Kolkata")).strftime(TIME_FORMATTER)
         save_utils(request.user, code, index)
         test_cases = custom_formatter(TestCases.objects.get(question_id=Questions.objects.get(pk=pk_id)).testcases)
+        credentials = Compiler.objects.get(selected=True)
         compiler = pydoodle.Compiler(
-            clientId=config("CLIENT_ID"),
-            clientSecret=config("CLIENT_SECRET_KEY")
+            clientId=credentials.client_id,
+            clientSecret=credentials.client_secret_key
         )
         base_cases = []
         is_base_case_fails = False
@@ -213,9 +223,11 @@ def get_output(request):
 def admin_panel(request):
     if request.user.is_superuser:
         u = Players.objects.all().filter(~Q(pk=1)).order_by("pk")
+        results = list(map(lambda x: x.split(","), AdminPriv.objects.get(pk=1).results))
+        compiler = [(i.user_name, i.password, i.selected) for i in Compiler.objects.all().order_by('pk')]
         return render(request, "adminPanel.html",
                       {"users": [(player.username, player.is_online, player.first_name) for player in u],
-                       "type": AdminPriv.objects.get(pk=1).type})
+                       "type": AdminPriv.objects.get(pk=1).type, "results": results, "compiler": compiler})
     else:
         return redirect("Home")
 
@@ -237,6 +249,18 @@ def user_add(request):
                       first_name=i[0].strip(),
                       email=i[1].strip()) for i in fi.values]
         Players.objects.bulk_create(us, ignore_conflicts=True)
+        return redirect("Admin", permanent=True)
+    else:
+        raise Http404()
+
+
+@login_required
+@requires_csrf_token
+def cred_add(request):
+    if request.user.is_superuser:
+        fi = pd.read_csv(request.FILES["files"])
+        us = [Compiler(user_name=i[0], password=i[1], client_id=i[2], client_secret_key=i[3]) for i in fi.values]
+        Compiler.objects.bulk_create(us, ignore_conflicts=True)
         return redirect("Admin", permanent=True)
     else:
         raise Http404()
@@ -271,15 +295,29 @@ def start_test(request):
         starter = AdminPriv.objects.get(pk=1)
         starter.type = q_type
         minute = int(q_type) * 10
+        # minute = 1 # Debugging purposes
         starter.time = (datetime.now(pytz.timezone("Asia/Kolkata")) + timedelta(minutes=minute)).strftime(
             TIME_FORMATTER)[:-3]
         starter.save()
         if starter.type != "0":
             codes = [i.question_code for i in Questions.objects.filter(question_type=starter.type)]
             Players.objects.filter(~Q(pk=1)).update(program_code=codes, program_completed=[0] * len(codes),
-                                                    program_time=[""] * len(codes))
+                                                    program_time=[datetime.now(pytz.timezone('Asia/Kolkata')).strftime(
+                                                        TIME_FORMATTER)] * len(codes))
         else:
             Players.objects.filter(~Q(pk=1)).update(program_code=[""], program_completed=[0], program_time=[""])
+        return JsonResponse({})
+    else:
+        raise Http404()
+
+
+@login_required
+@requires_csrf_token
+def select_compiler(request):
+    is_ajax = request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
+    if is_ajax:
+        Compiler.objects.filter(selected=True).update(selected=False)
+        Compiler.objects.filter(user_name=request.POST.get("username")).update(selected=True)
         return JsonResponse({})
     else:
         raise Http404()

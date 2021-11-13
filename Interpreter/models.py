@@ -16,9 +16,18 @@ class AdminPriv(models.Model):
         MED = 2, "Medium"
         HIG = 3, "High"
 
+    class ResultNumbers(models.IntegerChoices):
+        DEF = 16, "Default"
+        EAS = 8, "Easy"
+        MED = 4, "Medium"
+        S_MED = 2, "High"
+        WIN = 1, "Survivor"
+
     type = models.SmallIntegerField(choices=QuestionType.choices, default=QuestionType.DEF, )
     time = models.CharField(default=f"{datetime.now(pytz.timezone('Asia/Kolkata')).strftime('%Y-%m-%d %H:%M:%S.%f')}",
                             max_length=1000)
+    results = ArrayField(models.CharField(max_length=1000, default=""), size=10, default=list)
+    players_survived = models.SmallIntegerField(choices=ResultNumbers.choices, default=ResultNumbers.DEF)
 
 
 class Players(AbstractUser):
@@ -28,7 +37,7 @@ class Players(AbstractUser):
     is_online = models.BooleanField(default=False)
     program_completed = ArrayField(models.IntegerField(null=True, blank=True), size=10, default=list)
     program_code = ArrayField(models.TextField(null=True, blank=True), size=10, default=list)
-    program_time = ArrayField(models.CharField(default="", null=True, max_length=1000), size=10, default=list)
+    program_time = ArrayField(models.CharField(null=True, max_length=1000), size=10, default=list)
 
 
 class Questions(models.Model):
@@ -82,3 +91,14 @@ class TestCases(models.Model):
 
     class Meta:
         verbose_name_plural = "TestCases"
+
+
+class Compiler(models.Model):
+    class Meta:
+        verbose_name_plural = "Compiler"
+
+    user_name = models.EmailField()
+    password = models.CharField(max_length=100)
+    client_id = models.CharField(max_length=1000)
+    client_secret_key = models.CharField(max_length=1000)
+    selected = models.BooleanField(default=False)

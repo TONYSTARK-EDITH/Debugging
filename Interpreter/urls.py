@@ -1,4 +1,3 @@
-from django.contrib import admin
 from django.urls import path
 from . import views as v
 
@@ -13,4 +12,6 @@ urlpatterns = [
     path("run", v.get_output, name="Run"),
     path("start", v.start_test, name="Start"),
     path("save", v.save_code, name="Save"),
+    path("cred_add", v.cred_add, name="Credadd"),
+    path("selector", v.select_compiler, name="Credentials"),
 ]
