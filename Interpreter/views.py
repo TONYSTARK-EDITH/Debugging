@@ -1,9 +1,9 @@
 import time
 from contextlib import closing
-from datetime import timedelta, timezone, datetime
+from datetime import timedelta, timezone
+import pytz
 import pandas as pd
 import pydoodle
-import pytz
 from decouple import config
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -18,6 +18,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.views.decorators.csrf import requires_csrf_token
+
 from .models import *
 
 TIME_FORMATTER = "%Y-%m-%d %H:%M:%S.%f"

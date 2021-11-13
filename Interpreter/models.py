@@ -1,7 +1,11 @@
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
+from datetime import datetime
 from django.db import models
+import pytz
+
+from Interpreter.views import TIME_FORMATTER
 
 
 class AdminPriv(models.Model):
@@ -15,7 +19,8 @@ class AdminPriv(models.Model):
         HIG = 3, "High"
 
     type = models.SmallIntegerField(choices=QuestionType.choices, default=QuestionType.DEF, )
-    time = models.CharField(default="", max_length=1000)
+    time = models.CharField(default=f"{datetime.now(pytz.timezone('Asia/Kolkata')).strftime(TIME_FORMATTER)}",
+                            max_length=1000)
 
 
 class Players(AbstractUser):
