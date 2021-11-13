@@ -23,9 +23,9 @@ class Players(AbstractUser):
         verbose_name_plural = "Players"
 
     is_online = models.BooleanField(default=False)
-    program_completed = ArrayField(models.IntegerField(null=True, blank=True), size=10, default=[0] * 10)
-    program_code = ArrayField(models.TextField(null=True, blank=True), size=10, default=[""] * 10)
-    program_time = ArrayField(models.CharField(default="", null=True, max_length=1000), size=10, default=[""] * 10)
+    program_completed = ArrayField(models.IntegerField(null=True, blank=True), size=10, default=list)
+    program_code = ArrayField(models.TextField(null=True, blank=True), size=10, default=list)
+    program_time = ArrayField(models.CharField(default="", null=True, max_length=1000), size=10, default=list)
 
 
 class Questions(models.Model):
