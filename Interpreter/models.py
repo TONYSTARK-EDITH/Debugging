@@ -5,8 +5,6 @@ from datetime import datetime
 from django.db import models
 import pytz
 
-from Interpreter.views import TIME_FORMATTER
-
 
 class AdminPriv(models.Model):
     class Meta:
@@ -19,7 +17,7 @@ class AdminPriv(models.Model):
         HIG = 3, "High"
 
     type = models.SmallIntegerField(choices=QuestionType.choices, default=QuestionType.DEF, )
-    time = models.CharField(default=f"{datetime.now(pytz.timezone('Asia/Kolkata')).strftime(TIME_FORMATTER)}",
+    time = models.CharField(default=f"{datetime.now(pytz.timezone('Asia/Kolkata')).strftime('%Y-%m-%d %H:%M:%S.%f')}",
                             max_length=1000)
 
 

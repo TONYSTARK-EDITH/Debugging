@@ -1,7 +1,7 @@
 import time
 from contextlib import closing
 from datetime import timedelta, timezone
-import pytz
+
 import pandas as pd
 import pydoodle
 from decouple import config
