@@ -316,7 +316,7 @@
         Program Solved : <span id="counter">{{ count }}</span>
     </div>
     <div class="utils d-flex align-items-center flex-column float-end position-relative" style="top: -74px;">
-        <div id="timer float-end position-relative fst-italic" style="width:63px;font-size: 25px;">
+        <div id="timer float-end position-relative fst-italic" style="width:86px;font-size: 25px;">
             <span id="minutes"></span> : <span id="seconds"></span>
         </div>
         <div id="sign-out float-end position-relative fst-italic" style="font-size: 25px;">
@@ -398,7 +398,7 @@
                                      style="height: 430px !important;"></div>
                                 {% if i.5 == 0 %}
                                     <div class="button d-inline-flex flex-row position-relative clearfix"
-                                         style="top: 444px;">
+                                         style="top: 435px;">
                                         <button id="save-{{ counter }}"
                                                 class="btn btn-success p-2 m-2 ms-0 me-3 clearfix"
                                                 onclick="saveCode('ace-{{ counter }}');">
@@ -506,7 +506,7 @@
                                 <br>
                                 {% if i.5 == 0 %}
                                     <div class="button d-inline-flex flex-row position-relative clearfix"
-                                         style="top: 444px;">
+                                         style="top: 435px;">
                                         <button id="save-{{ counter }}"
                                                 class="btn btn-success p-2 m-2 ms-0 me-3 clearfix"
                                                 onclick="saveCode('ace-{{ counter }}');">
@@ -740,8 +740,9 @@
                 let timerInterval = setInterval(() => {
                     const now = new Date(Date.parse(new Date().toLocaleString("en-US", {
                         timeZone: `Asia/Kolkata`
-                    }))).getTime();
-                    const difference = compareDate.getTime() - now;
+                    })));
+                    console.log(now);
+                    const difference = compareDate.getTime() - now.getTime();
                     const minutes = Math.floor(
                         (difference % (1000 * 60 * 60)) / (1000 * 60)
                     );
