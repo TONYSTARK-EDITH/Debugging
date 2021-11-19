@@ -44,12 +44,12 @@ class Questions(models.Model):
     class QuestionType(models.IntegerChoices):
         EAS = 1, "Easy"
         MED = 2, "Medium"
-        HIG = 3, "High"
+        HIG = 4, "High"
 
     class QuestionTime(models.IntegerChoices):
         EAS = 1, "10 min"
         MED = 2, "20 min"
-        HIG = 3, "30 min"
+        HIG = 4, "30 min"
 
     class QuestionLang(models.IntegerChoices):
         EAS = 1, "Python"
@@ -97,7 +97,7 @@ class Compiler(models.Model):
     class Meta:
         verbose_name_plural = "Compiler"
 
-    user_name = models.EmailField()
+    user_name = models.EmailField(primary_key=True)
     password = models.CharField(max_length=100)
     client_id = models.CharField(max_length=1000)
     client_secret_key = models.CharField(max_length=1000)

@@ -81,7 +81,7 @@ def got_offline(sender, user, request, **kwargs):
                        Players.objects.filter(~Q(pk=1)).values_list('program_completed', 'program_time', 'username',
                                                                     'first_name', named=True)))
         lst.sort(key=lambda x: (-x[0], x[1]))
-        print(lst[:16])
+        print(lst[:int(AdminPriv.objects.get(pk=1).players_survived)])
         user.is_online = False
         user.save()
 
@@ -227,7 +227,8 @@ def admin_panel(request):
         compiler = [(i.user_name, i.password, i.selected) for i in Compiler.objects.all().order_by('pk')]
         return render(request, "adminPanel.html",
                       {"users": [(player.username, player.is_online, player.first_name) for player in u],
-                       "type": AdminPriv.objects.get(pk=1).type, "results": results, "compiler": compiler})
+                       "type": AdminPriv.objects.get(pk=1).type, "results": results, "compiler": compiler,
+                       "players": AdminPriv.objects.get(pk=1).players_survived})
     else:
         return redirect("Home")
 
@@ -318,6 +319,17 @@ def select_compiler(request):
     if is_ajax:
         Compiler.objects.filter(selected=True).update(selected=False)
         Compiler.objects.filter(user_name=request.POST.get("username")).update(selected=True)
+        return JsonResponse({})
+    else:
+        raise Http404()
+
+
+@login_required
+@requires_csrf_token
+def select_players(request):
+    is_ajax = request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
+    if is_ajax:
+        AdminPriv.objects.filter(pk=1).update(players_survived=request.POST.get("players"))
         return JsonResponse({})
     else:
         raise Http404()

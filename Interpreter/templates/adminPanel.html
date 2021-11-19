@@ -512,6 +512,102 @@
             <div class="table-responsive">
                 <table class="table table-bordered table-hover caption-top">
                     <caption>
+                        Number of players - {{ players }}
+                    </caption>
+                    <thead class="table-dark">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Numbers</th>
+                        <th scope="col">Handle</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <th scope="row">1</th>
+                        <td>16</td>
+                        <td class="text-center">
+                            {% if players == 16 %}
+                                <button id="select-p-16"
+                                        class="btn btn-danger">Deselect
+                                </button>
+                            {% else %}
+                                <button id="select-p-16"
+                                        class="btn btn-success"
+                                        onclick="selectPlayers(16);">select
+                                </button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">2</th>
+                        <td>8</td>
+                        <td class="text-center">
+                            {% if players == 8 %}
+                                <button id="select-p-8"
+                                        class="btn btn-danger">Deselect
+                                </button>
+                            {% else %}
+                                <button id="select-p-8"
+                                        class="btn btn-success"
+                                        onclick="selectPlayers(8);">select
+                                </button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">3</th>
+                        <td>4</td>
+                        <td class="text-center">
+                            {% if players == 4 %}
+                                <button id="select-p-4"
+                                        class="btn btn-danger">Deselect
+                                </button>
+                            {% else %}
+                                <button id="select-p-4"
+                                        class="btn btn-success"
+                                        onclick="selectPlayers(4);">select
+                                </button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">4</th>
+                        <td>2</td>
+                        <td class="text-center">
+                            {% if players == 2 %}
+                                <button id="select-p-2"
+                                        class="btn btn-danger">Deselect
+                                </button>
+                            {% else %}
+                                <button id="select-p-2"
+                                        class="btn btn-success"
+                                        onclick="selectPlayers(2);">select
+                                </button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">5</th>
+                        <td>1</td>
+                        <td class="text-center">
+                            {% if players == 1 %}
+                                <button id="select-p-1"
+                                        class="btn btn-danger">Deselect
+                                </button>
+                            {% else %}
+                                <button id="select-p-1"
+                                        class="btn btn-success"
+                                        onclick="selectPlayers(1);">select
+                                </button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover caption-top">
+                    <caption>
                         Result
                     </caption>
                     <thead class="table-dark">
@@ -624,6 +720,11 @@
                 const toastLiveExample = document.getElementById('liveToast');
                 const toast = new bootstrap.Toast(toastLiveExample);
                 toast.show();
+            },
+            error: (xhr, status, error) => {
+                $(".toast-body").text(error);
+                const toast = new bootstrap.Toast($("#liveToast"));
+                toast.show();
             }
         })
     };
@@ -639,12 +740,39 @@
             dataType: "json",
             success: () => {
                 $(".toast-body").text("Compiler changed");
-                const toastLiveExample = document.getElementById('liveToast');
-                const toast = new bootstrap.Toast(toastLiveExample);
+                const toast = new bootstrap.Toast($("#liveToast"));
+                toast.show();
+            },
+            error: (xhr, status, error) => {
+                $(".toast-body").text(error);
+                const toast = new bootstrap.Toast($("#liveToast"));
                 toast.show();
             }
         });
         console.log(username);
+    }
+
+    const selectPlayers = players => {
+        const data = {
+            "players": players,
+            "csrfmiddlewaretoken": "{{ csrf_token }}",
+        }
+        $.ajax({
+            url: "/players",
+            method: "post",
+            data: data,
+            dataType: "json",
+            success: () => {
+                $(".toast-body").text("Players changed");
+                const toast = new bootstrap.Toast($("#liveToast"));
+                toast.show();
+            },
+            error: (xhr, status, error) => {
+                $(".toast-body").text(error);
+                const toast = new bootstrap.Toast($("#liveToast"));
+                toast.show();
+            }
+        })
     }
 
 

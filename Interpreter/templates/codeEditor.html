@@ -818,6 +818,11 @@
                     }
                 }
                 myCollapse.collapse("show");
+            },
+            error: (xhr, status, error) => {
+                $(".toast-body").text(error);
+                const toast = new bootstrap.Toast($("#liveToast"));
+                toast.show();
             }
         })
     }
@@ -839,6 +844,11 @@
                 success: () => {
                     const toastLiveExample = document.getElementById('liveToast');
                     const toast = new bootstrap.Toast(toastLiveExample);
+                    toast.show();
+                },
+                error: (xhr, status, error) => {
+                    $(".toast-body").text(error);
+                    const toast = new bootstrap.Toast($("#liveToast"));
                     toast.show();
                 }
             }
