@@ -6,6 +6,10 @@ from django.db import models
 import pytz
 
 
+def timer():
+    return [f"{datetime.now(pytz.timezone('Asia/Kolkata')).strftime('%Y-%m-%d %H:%M:%S.%f')}"] * 10
+
+
 class AdminPriv(models.Model):
     class Meta:
         verbose_name_plural = "AdminPriv"
@@ -26,7 +30,8 @@ class AdminPriv(models.Model):
     type = models.SmallIntegerField(choices=QuestionType.choices, default=QuestionType.DEF, )
     time = models.CharField(default=f"{datetime.now(pytz.timezone('Asia/Kolkata')).strftime('%Y-%m-%d %H:%M:%S.%f')}",
                             max_length=1000)
-    results = ArrayField(models.CharField(max_length=1000, default=""), size=10, default=list)
+    results = ArrayField(models.CharField(max_length=1000, blank=True), size=16, default=list,
+                         blank=True)
     players_survived = models.SmallIntegerField(choices=ResultNumbers.choices, default=ResultNumbers.DEF)
 
 
@@ -35,9 +40,9 @@ class Players(AbstractUser):
         verbose_name_plural = "Players"
 
     is_online = models.BooleanField(default=False)
-    program_completed = ArrayField(models.IntegerField(null=True, blank=True), size=10, default=list)
-    program_code = ArrayField(models.TextField(null=True, blank=True), size=10, default=list)
-    program_time = ArrayField(models.CharField(null=True, max_length=1000), size=10, default=list)
+    program_completed = ArrayField(models.IntegerField(blank=True), size=10, default=list, blank=True)
+    program_code = ArrayField(models.TextField(blank=True), size=10, default=list, blank=True)
+    program_time = ArrayField(models.CharField(max_length=1000), size=10, default=timer, blank=True)
 
 
 class Questions(models.Model):
@@ -56,7 +61,7 @@ class Questions(models.Model):
         MED = 2, "Java"
         HIG = 3, "C"
 
-    question = models.CharField(max_length=1000, default="")
+    question = models.CharField(max_length=1000, default="", blank=True)
 
     question_code = models.TextField(
         null=False,
@@ -97,7 +102,7 @@ class Compiler(models.Model):
     class Meta:
         verbose_name_plural = "Compiler"
 
-    user_name = models.EmailField(primary_key=True)
+    user_name = models.EmailField(unique=True)
     password = models.CharField(max_length=100)
     client_id = models.CharField(max_length=1000)
     client_secret_key = models.CharField(max_length=1000)

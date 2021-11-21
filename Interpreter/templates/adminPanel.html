@@ -68,7 +68,7 @@
         }
 
 
-        #dashboard {
+        #dashboard, #users, #questions, #results, #Api {
             max-height: 35em !important;
         }
 
@@ -475,7 +475,7 @@
                 </table>
             </div>
         </div>
-        <div class="tab-pane fade" id="users" role="tabpanel">
+        <div class="tab-pane new fade" id="users" role="tabpanel">
             <form enctype="multipart/form-data" class="row g-3 pe-auto m-lg-auto" method="post" action="/addUser">
                 {% csrf_token %}
                 <div class="col-auto">
@@ -492,7 +492,7 @@
                 </div>
             </form>
         </div>
-        <div class="tab-pane fade" id="questions" role="tabpanel">
+        <div class="tab-pane new fade" id="questions" role="tabpanel">
             <form enctype="multipart/form-data" class="row g-3 pe-auto m-lg-auto" method="post" action="/addQuestion">
                 {% csrf_token %}
                 <div class="col-auto">
@@ -508,7 +508,7 @@
                 </div>
             </form>
         </div>
-        <div class="tab-pane fade show" id="results" role="tabpanel">
+        <div class="tab-pane new fade show" id="results" role="tabpanel">
             <div class="table-responsive">
                 <table class="table table-bordered table-hover caption-top">
                     <caption>
@@ -607,8 +607,11 @@
             </div>
             <div class="table-responsive">
                 <table class="table table-bordered table-hover caption-top">
-                    <caption>
+                    <caption class="position-relative">
                         Result
+                        <div class="position-relative float-end">
+                            <button class="btn btn-outline-success" onclick="getResults();">Get Result</button>
+                        </div>
                     </caption>
                     <thead class="table-dark">
                     <tr>
@@ -621,15 +624,15 @@
                     {% for i in results %}
                         <tr>
                             <th scope="row">{{ forloop.counter }}</th>
-                            <td>i.0</td>
-                            <td>i.1</td>
+                            <td>{{ i.0 }}</td>
+                            <td>{{ i.1 }}</td>
                         </tr>
                     {% endfor %}
                     </tbody>
                 </table>
             </div>
         </div>
-        <div class="tab-pane fade show" id="Api" role="tabpanel">
+        <div class="tab-pane new fade show" id="Api" role="tabpanel">
             <form enctype="multipart/form-data" class="row g-3 pe-auto m-lg-auto" method="post" action="/cred_add">
                 {% csrf_token %}
                 <div class="col-auto">
@@ -691,11 +694,12 @@
         integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
         crossorigin="anonymous"></script>
 <script>
-    document.querySelector('.new').fakeScroll();
-    const tooltipTriggerList = [].slice.call(
-        document.querySelectorAll('[data-toggle="tooltip"]')
-    );
-    const tooltipList = tooltipTriggerList.map((e) => new bootstrap.Tooltip(e));
+    $(".new").toArray().map((e) => e.fakeScroll());
+    $('[data-toggle="tooltip"]').toArray().map((e) => new bootstrap.Tooltip(e));
+    $("#liveToast").on("hidden.bs.toast", () => {
+        location.reload();
+    })
+
     const startTest = type => {
         let t = type === "easy" ? 1 : (type === "medium" ? 2 : type === "hard" ? 3 : 0);
         const data = {
@@ -717,14 +721,11 @@
                     $("#" + type + "-end").removeClass("visually-hidden");
                     $(".toast-body").text("Exam started");
                 }
-                const toastLiveExample = document.getElementById('liveToast');
-                const toast = new bootstrap.Toast(toastLiveExample);
-                toast.show();
+                new bootstrap.Toast($("#liveToast")).show();
             },
             error: (xhr, status, error) => {
                 $(".toast-body").text(error);
-                const toast = new bootstrap.Toast($("#liveToast"));
-                toast.show();
+                new bootstrap.Toast($("#liveToast")).show();
             }
         })
     };
@@ -740,16 +741,13 @@
             dataType: "json",
             success: () => {
                 $(".toast-body").text("Compiler changed");
-                const toast = new bootstrap.Toast($("#liveToast"));
-                toast.show();
+                new bootstrap.Toast($("#liveToast")).show();
             },
             error: (xhr, status, error) => {
                 $(".toast-body").text(error);
-                const toast = new bootstrap.Toast($("#liveToast"));
-                toast.show();
+                new bootstrap.Toast($("#liveToast")).show();
             }
         });
-        console.log(username);
     }
 
     const selectPlayers = players => {
@@ -764,15 +762,32 @@
             dataType: "json",
             success: () => {
                 $(".toast-body").text("Players changed");
-                const toast = new bootstrap.Toast($("#liveToast"));
-                toast.show();
+                new bootstrap.Toast($("#liveToast")).show();
             },
             error: (xhr, status, error) => {
                 $(".toast-body").text(error);
-                const toast = new bootstrap.Toast($("#liveToast"));
-                toast.show();
+                new bootstrap.Toast($("#liveToast")).show();
             }
         })
+    }
+    const getResults = () => {
+        const data = {
+            "csrfmiddlewaretoken": "{{ csrf_token }}"
+        };
+        $.ajax({
+            url: "/results",
+            data: data,
+            dataType: "json",
+            method: "post",
+            success: () => {
+                $(".toast-body").text("Results calculated");
+                new bootstrap.Toast($("#liveToast")).show();
+            },
+            error: (xhr, status, error) => {
+                $(".toast-body").text(error);
+                new bootstrap.Toast($("#liveToast")).show();
+            }
+        });
     }
 
 

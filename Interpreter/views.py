@@ -76,12 +76,6 @@ def got_online(sender, user, request, **kwargs):
 def got_offline(sender, user, request, **kwargs):
     if request.POST.get("logout") == "1":
         AdminPriv.objects.filter(pk=1).update(type="0")
-        lst = list(map(lambda x: (
-            x[0].count(1), max(list(map(lambda y: datetime.strptime(y, TIME_FORMATTER), x[1]))), x[2], x[3]),
-                       Players.objects.filter(~Q(pk=1)).values_list('program_completed', 'program_time', 'username',
-                                                                    'first_name', named=True)))
-        lst.sort(key=lambda x: (-x[0], x[1]))
-        print(lst[:int(AdminPriv.objects.get(pk=1).players_survived)])
         user.is_online = False
         user.save()
 
@@ -156,13 +150,13 @@ def save_utils(user, code, index):
 def count_time_utils(user, c_time, index):
     player = Players.objects.get(username=user)
     count = player.program_completed
-    timer = player.program_time
+    timer_player = player.program_time
     if count[index] == 1:
         return
     count[index] = 1
-    timer[index] = c_time
+    timer_player[index] = c_time
     player.program_completed = count
-    player.program_time = timer
+    player.program_time = timer_player
     player.save()
 
 
@@ -330,6 +324,23 @@ def select_players(request):
     is_ajax = request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
     if is_ajax:
         AdminPriv.objects.filter(pk=1).update(players_survived=request.POST.get("players"))
+        return JsonResponse({})
+    else:
+        raise Http404()
+
+
+@login_required
+@requires_csrf_token
+def calculate_results(request):
+    is_ajax = request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
+    if is_ajax:
+        lst = list(map(lambda x: (
+            x[0].count(1), max(list(map(lambda y: datetime.strptime(y, TIME_FORMATTER), x[1]))), x[2], x[3]),
+                       Players.objects.filter(~Q(pk=1)).values_list('program_completed', 'program_time', 'username',
+                                                                    'first_name', named=True)))
+        lst.sort(key=lambda x: (-x[0], x[1]))
+        length = int(AdminPriv.objects.get(pk=1).players_survived)
+        AdminPriv.objects.filter(pk=1).update(results=list(map(lambda x: f"{x[-2]},{x[-1]}", lst[:length])))
         return JsonResponse({})
     else:
         raise Http404()
