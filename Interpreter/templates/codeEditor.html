@@ -736,12 +736,10 @@
                     });
                 }
                 const compareDate = new Date(parseFloat("{{ end }}") * 1000);
-                console.log(new Date({{ end }}), compareDate);
+                console.log(compareDate);
                 let timerInterval = setInterval(() => {
-                    const now = new Date(Date.parse(new Date().toLocaleString("en-US", {
-                        timeZone: `Asia/Kolkata`
-                    })));
-                    console.log(now, new Date());
+                    const now = new Date();
+                    console.log(now);
                     const difference = compareDate.getTime() - now.getTime();
                     const minutes = Math.floor(
                         (difference % (1000 * 60 * 60)) / (1000 * 60)

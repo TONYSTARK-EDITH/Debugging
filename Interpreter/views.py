@@ -21,7 +21,7 @@ from django.views.decorators.csrf import requires_csrf_token
 
 from .models import *
 
-TIME_FORMATTER = "%Y-%m-%d %H:%M:%S.%f"
+TIME_FORMATTER = "%d.%m.%Y %H:%M:%S,%f"
 
 
 def bulk_create_query(file):
@@ -120,7 +120,7 @@ def code_editor(request):
         user = Players.objects.get(username=request.user)
         admin = AdminPriv.objects.get(pk=1)
         question_type = admin.type
-        end = datetime.strptime(admin.time, TIME_FORMATTER).astimezone(pytz.timezone("Asia/Kolkata"))
+        end = datetime.strptime(admin.time, TIME_FORMATTER)
         q, res, started, u, t = [], [], "false", [], []
         if question_type != 0:
             q = Questions.objects.filter(question_type=question_type)
@@ -293,7 +293,7 @@ def start_test(request):
         minute = int(q_type) * 10
         # minute = 1 # Debugging purposes
         starter.time = (datetime.now(pytz.timezone("Asia/Kolkata")) + timedelta(minutes=minute)).strftime(
-            TIME_FORMATTER)[:-3]
+            TIME_FORMATTER)
         starter.save()
         if starter.type != "0":
             codes = [i.question_code for i in Questions.objects.filter(question_type=starter.type)]
