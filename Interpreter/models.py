@@ -7,7 +7,7 @@ import pytz
 
 
 def timer():
-    return [f"{datetime.now(pytz.timezone('Asia/Kolkata')).strftime('%d.%m.%Y %H:%M:%S,%f')}"] * 10
+    return [f"{datetime.now(pytz.timezone('Asia/Kolkata')).strftime('%d.%m.%Y %H:%M:%S')}"] * 10
 
 
 class AdminPriv(models.Model):
@@ -28,7 +28,7 @@ class AdminPriv(models.Model):
         WIN = 1, "Survivor"
 
     type = models.SmallIntegerField(choices=QuestionType.choices, default=QuestionType.DEF, )
-    time = models.CharField(default=f"{datetime.now(pytz.timezone('Asia/Kolkata')).strftime('%d.%m.%Y %H:%M:%S,%f')}",
+    time = models.CharField(default=f"{datetime.now(pytz.timezone('Asia/Kolkata')).strftime('%d.%m.%Y %H:%M:%S')}",
                             max_length=1000)
     results = ArrayField(models.CharField(max_length=1000, blank=True), size=16, default=list,
                          blank=True)

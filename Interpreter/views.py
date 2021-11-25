@@ -20,7 +20,7 @@ from django.views.decorators.csrf import requires_csrf_token
 
 from .models import *
 
-TIME_FORMATTER = "%d.%m.%Y %H:%M:%S,%f"
+TIME_FORMATTER = "%d.%m.%Y %H:%M:%S"
 
 
 def bulk_create_query(file):
