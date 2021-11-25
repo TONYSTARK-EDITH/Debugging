@@ -120,6 +120,7 @@ def code_editor(request):
         admin = AdminPriv.objects.get(pk=1)
         question_type = admin.type
         end = datetime.strptime(admin.time, TIME_FORMATTER).astimezone(pytz.timezone("Asia/Kolkata"))
+        print(end)
         q, res, started, u, t = [], [], "false", [], []
         if question_type != 0:
             q = Questions.objects.filter(question_type=question_type)
