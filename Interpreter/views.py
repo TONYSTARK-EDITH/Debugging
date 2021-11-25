@@ -18,6 +18,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.views.decorators.csrf import requires_csrf_token
+
 from .models import *
 
 TIME_FORMATTER = "%Y-%m-%d %H:%M:%S.%f"
@@ -119,9 +120,7 @@ def code_editor(request):
         user = Players.objects.get(username=request.user)
         admin = AdminPriv.objects.get(pk=1)
         question_type = admin.type
-        india = pytz.timezone("Asia/Kolkata")
-        end = india.localize(datetime.strptime(admin.time, TIME_FORMATTER))
-        print(end)
+        end = datetime.strptime(admin.time, TIME_FORMATTER)
         q, res, started, u, t = [], [], "false", [], []
         if question_type != 0:
             q = Questions.objects.filter(question_type=question_type)
@@ -135,7 +134,7 @@ def code_editor(request):
             res.append([j, i.lang, i.question, s[:2], i.pk, k])
         return render(request, "codeEditor.html",
                       {"res": res, "n": len(res), "name": name, "started": started,
-                       "end": int(time.mktime(end.timetuple())),
+                       "end": int(time.mktime(end.timetuple())) * 1000,
                        "count": user.program_completed.count(1)})
     else:
         return redirect("Admin")
