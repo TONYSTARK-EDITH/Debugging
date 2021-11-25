@@ -735,15 +735,13 @@
                         $(`.a-${i}`).addClass("visually-hidden");
                     });
                 }
-                const compareDate = new Date(Date.parse(new Date({{ end }}).toLocaleString("en-US", {
-                    timeZone: `Asia/Kolkata`
-                })));
+                const compareDate = new Date(parseFloat("{{ end }}") * 1000);
                 console.log(new Date({{ end }}), compareDate);
                 let timerInterval = setInterval(() => {
                     const now = new Date(Date.parse(new Date().toLocaleString("en-US", {
                         timeZone: `Asia/Kolkata`
                     })));
-                    console.log(now);
+                    console.log(now, new Date());
                     const difference = compareDate.getTime() - now.getTime();
                     const minutes = Math.floor(
                         (difference % (1000 * 60 * 60)) / (1000 * 60)
