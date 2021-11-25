@@ -119,7 +119,8 @@ def code_editor(request):
         user = Players.objects.get(username=request.user)
         admin = AdminPriv.objects.get(pk=1)
         question_type = admin.type
-        end = datetime.strptime(admin.time, TIME_FORMATTER).astimezone(pytz.timezone("Asia/Kolkata"))
+        india = pytz.timezone("Asia/Kolkata")
+        end = india.localize(datetime.strptime(admin.time, TIME_FORMATTER))
         print(end)
         q, res, started, u, t = [], [], "false", [], []
         if question_type != 0:
