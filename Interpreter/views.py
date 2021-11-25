@@ -120,7 +120,7 @@ def code_editor(request):
         user = Players.objects.get(username=request.user)
         admin = AdminPriv.objects.get(pk=1)
         question_type = admin.type
-        end = datetime.strptime(admin.time, TIME_FORMATTER)
+        end = datetime.strptime(admin.time, TIME_FORMATTER).astimezone(pytz.timezone("Asia/Kolkata"))
         q, res, started, u, t = [], [], "false", [], []
         if question_type != 0:
             q = Questions.objects.filter(question_type=question_type)
@@ -134,7 +134,7 @@ def code_editor(request):
             res.append([j, i.lang, i.question, s[:2], i.pk, k])
         return render(request, "codeEditor.html",
                       {"res": res, "n": len(res), "name": name, "started": started,
-                       "end": int(time.mktime(end.timetuple())) * 100,
+                       "end": int(time.mktime(end.timetuple())) * 1000,
                        "count": user.program_completed.count(1)})
     else:
         return redirect("Admin")
