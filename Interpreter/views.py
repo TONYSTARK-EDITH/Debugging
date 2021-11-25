@@ -1,4 +1,3 @@
-import time
 from contextlib import closing
 from datetime import timedelta, timezone
 
@@ -134,7 +133,7 @@ def code_editor(request):
             res.append([j, i.lang, i.question, s[:2], i.pk, k])
         return render(request, "codeEditor.html",
                       {"res": res, "n": len(res), "name": name, "started": started,
-                       "end": time.mktime(end.timetuple()),
+                       "end": end.timestamp(),
                        "count": user.program_completed.count(1)})
     else:
         return redirect("Admin")
