@@ -738,7 +738,7 @@
                 const compareDate = new Date(Date.parse(new Date({{ end }}).toLocaleString("en-US", {
                     timeZone: `Asia/Kolkata`
                 })));
-                console.log(compareDate);
+                console.log("{{ end }}", compareDate);
                 let timerInterval = setInterval(() => {
                     const now = new Date(Date.parse(new Date().toLocaleString("en-US", {
                         timeZone: `Asia/Kolkata`
