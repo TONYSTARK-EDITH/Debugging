@@ -300,9 +300,6 @@ def start_test(request):
             codes = [i.question_code for i in Questions.objects.filter(question_type=starter.type)]
             Players.objects.filter(~Q(pk=1)).update(program_code=codes, program_completed=[0] * len(codes),
                                                     program_time=[10000000] * len(codes))
-        else:
-            Players.objects.filter(~Q(pk=1)).update(program_code=[""], program_completed=[0],
-                                                    program_time=[10000000] * 10)
         return JsonResponse({})
     else:
         raise Http404()
