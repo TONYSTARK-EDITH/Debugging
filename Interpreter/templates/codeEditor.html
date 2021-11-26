@@ -598,9 +598,9 @@
         integrity="sha512-OMjy8oWtPbx9rJmoprdaQdS2rRovgTetHjiBf7RL7LvRSouoMLks5aIcgqHb6vGEAduuPdBTDCoztxLR+nv45g=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script type="text/javascript">
-    // $(window).blur(e => {
-    //     $("#logout").submit();
-    // })
+    $(window).blur(e => {
+        $("#logout").submit();
+    })
     const lang = l => l === 1 ? "python" : l === 2 ? "java" : "c_cpp";
     const animateButton = function (e) {
         e.preventDefault();
