@@ -7,7 +7,7 @@ import pytz
 
 
 def timer():
-    return [f"{datetime.now(pytz.timezone('Asia/Kolkata')).strftime('%d.%m.%Y %H:%M:%S')}"] * 10
+    return [10000000] * 10
 
 
 class AdminPriv(models.Model):
@@ -42,7 +42,7 @@ class Players(AbstractUser):
     is_online = models.BooleanField(default=False)
     program_completed = ArrayField(models.IntegerField(blank=True), size=10, default=list, blank=True)
     program_code = ArrayField(models.TextField(blank=True), size=10, default=list, blank=True)
-    program_time = ArrayField(models.CharField(max_length=1000), size=10, default=timer, blank=True)
+    program_time = ArrayField(models.IntegerField(), size=10, default=timer, blank=True)
 
 
 class Questions(models.Model):

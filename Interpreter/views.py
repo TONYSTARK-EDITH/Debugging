@@ -154,7 +154,9 @@ def count_time_utils(user, c_time, index):
     if count[index] == 1:
         return
     count[index] = 1
-    timer_player[index] = c_time
+    sub = datetime.strptime(c_time, TIME_FORMATTER)
+    s = (datetime.strptime(AdminPriv.objects.get(pk=1).time, TIME_FORMATTER) - sub)
+    timer_player[index] = f"{s.seconds}"
     player.program_completed = count
     player.program_time = timer_player
     player.save()
@@ -297,10 +299,10 @@ def start_test(request):
         if starter.type != "0":
             codes = [i.question_code for i in Questions.objects.filter(question_type=starter.type)]
             Players.objects.filter(~Q(pk=1)).update(program_code=codes, program_completed=[0] * len(codes),
-                                                    program_time=[datetime.now(pytz.timezone('Asia/Kolkata')).strftime(
-                                                        TIME_FORMATTER)] * len(codes))
+                                                    program_time=[10000000] * len(codes))
         else:
-            Players.objects.filter(~Q(pk=1)).update(program_code=[""], program_completed=[0], program_time=[""])
+            Players.objects.filter(~Q(pk=1)).update(program_code=[""], program_completed=[0],
+                                                    program_time=[10000000] * 10)
         return JsonResponse({})
     else:
         raise Http404()
@@ -335,10 +337,10 @@ def calculate_results(request):
     is_ajax = request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
     if is_ajax:
         lst = list(map(lambda x: (
-            x[0].count(1), max(list(map(lambda y: datetime.strptime(y, TIME_FORMATTER), x[1]))), x[2], x[3]),
+            x[0].count(1), min(x[1]), x[2], x[3]),
                        Players.objects.filter(~Q(pk=1)).values_list('program_completed', 'program_time', 'username',
                                                                     'first_name', named=True)))
-        lst.sort(key=lambda x: (-x[0], x[1]))
+        lst.sort(key=lambda x: (x[0], x[1]), reverse=True)
         length = int(AdminPriv.objects.get(pk=1).players_survived)
         AdminPriv.objects.filter(pk=1).update(results=list(map(lambda x: f"{x[-2]},{x[-1]}", lst[:length])))
         return JsonResponse({})
