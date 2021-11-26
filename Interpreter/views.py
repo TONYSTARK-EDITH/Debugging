@@ -350,6 +350,7 @@ def delete_user(request):
     userna = request.POST.get("uname")
     if is_ajax:
         Players.objects.get(username=userna).delete()
+        return JsonResponse({})
     else:
         raise Http404()
 
