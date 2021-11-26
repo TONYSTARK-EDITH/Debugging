@@ -16,5 +16,5 @@ urlpatterns = [
     path("selector", v.select_compiler, name="Credentials"),
     path("players", v.select_players, name="Players"),
     path("results", v.calculate_results, name="Results"),
-    path("delete", v.delete_user, name="Delete"),
+    path("deleteUser", v.delete_user, name="Delete"),
 ]
