@@ -345,5 +345,14 @@ def calculate_results(request):
         raise Http404()
 
 
+def delete_user(request):
+    is_ajax = request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
+    userna = request.POST.get("uname")
+    if is_ajax:
+        Players.objects.get(username=userna).delete()
+    else:
+        raise Http404()
+
+
 def handler404(request, exception=None):
     return render(request, template_name="Error.html", status=404)

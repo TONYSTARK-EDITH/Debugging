@@ -467,7 +467,7 @@
                                     <img src="{% static 'img/status_offline.svg' %}" alt="Offline"/> {% endif %}
                             </td>
                             <td class="text-center">
-                                <button class="btn btn-danger rounded">Delete</button>
+                                <button class="btn btn-danger rounded" onclick="delete_('{{ i.0 }}')">Delete</button>
                             </td>
                         </tr>
                     {% endfor %}
@@ -781,6 +781,27 @@
             method: "post",
             success: () => {
                 $(".toast-body").text("Results calculated");
+                new bootstrap.Toast($("#liveToast")).show();
+            },
+            error: (xhr, status, error) => {
+                $(".toast-body").text(error);
+                new bootstrap.Toast($("#liveToast")).show();
+            }
+        });
+    }
+
+    const delete_ = (u) => {
+        const data = {
+            "csrfmiddlewaretoken": "{{ csrf_token }}",
+            "uname": u,
+        }
+        $.ajax({
+            url: "/delete",
+            data: data,
+            dataType: "json",
+            method: "post",
+            success: () => {
+                $(".toast-body").text("User deleted");
                 new bootstrap.Toast($("#liveToast")).show();
             },
             error: (xhr, status, error) => {
