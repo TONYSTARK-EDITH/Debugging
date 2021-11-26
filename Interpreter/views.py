@@ -95,9 +95,12 @@ def login_user(request):
     auth = authenticate(username=username, password=password)
     if auth is not None:
         AdminPriv.objects.get_or_create(pk=1)
-        Compiler.objects.get_or_create(user_name="max", password="max", selected=True,
-                                       client_id=config("CLIENT_ID"),
-                                       client_secret_key=config("CLIENT_SECRET_KEY"))
+        try:
+            Compiler.objects.get_or_create(user_name="max", password="max", selected=True,
+                                           client_id=config("CLIENT_ID"),
+                                           client_secret_key=config("CLIENT_SECRET_KEY"))
+        except:
+            pass
 
         login(request=request, user=auth)
         if request.user.is_superuser:
