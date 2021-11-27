@@ -1,6 +1,5 @@
 from contextlib import closing
 from datetime import timedelta, timezone
-
 import pandas as pd
 import pydoodle
 from decouple import config
@@ -12,12 +11,11 @@ from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.db import connection
 from django.db.models import Q
 from django.dispatch import receiver
-from django.http import Http404
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.views.decorators.csrf import requires_csrf_token
-
+import sys
 from .models import *
 
 TIME_FORMATTER = "%d.%m.%Y %H:%M:%S"
@@ -95,12 +93,9 @@ def login_user(request):
     auth = authenticate(username=username, password=password)
     if auth is not None:
         AdminPriv.objects.get_or_create(pk=1)
-        try:
-            Compiler.objects.get_or_create(user_name="max", password="max", selected=True,
-                                           client_id=config("CLIENT_ID"),
-                                           client_secret_key=config("CLIENT_SECRET_KEY"))
-        except:
-            pass
+        if not Compiler.objects.filter(pk=1).exists():
+            Compiler.objects.create(user_name="max", password="max", client_id=config("CLIENT_ID"),
+                                    client_secret_key=config("CLIENT_SECRET_KEY"), selected=True)
 
         login(request=request, user=auth)
         if request.user.is_superuser:
@@ -169,7 +164,7 @@ def count_time_utils(user, c_time, index):
 @requires_csrf_token
 def save_code(request):
     is_ajax = request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
-    if is_ajax:
+    if is_ajax and AdminPriv.objects.get(pk=1).type != "0":
         code = request.POST.get("code")
         index = int(request.POST.get("index"))
         save_utils(request.user, code, index)
@@ -182,7 +177,7 @@ def save_code(request):
 @requires_csrf_token
 def get_output(request):
     is_ajax = request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
-    if is_ajax:
+    if is_ajax and AdminPriv.objects.get(pk=1).type != "0":
         code = request.POST.get("code")
         lang = request.POST.get("lang")
         pk_id = int(request.POST.get('id'))
@@ -359,4 +354,9 @@ def delete_user(request):
 
 
 def handler404(request, exception=None):
-    return render(request, template_name="Error.html", status=404)
+    return render(request, template_name="404.html", status=404)
+
+
+def handler500(request, exception=None):
+    type_, value, _ = sys.exc_info()
+    return render(request, template_name="500.html", context={"type": repr(type_), "value": value}, status=500)
